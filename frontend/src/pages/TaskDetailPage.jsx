@@ -58,17 +58,29 @@ export default function TaskDetailPage() {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const [taskRes, commentsRes, attachmentsRes] = await Promise.all([
-        api.get(`/tasks/${id}`),
+      const taskRes = await api.get(`/tasks/${id}`);
+      setTask(taskRes.data.task || taskRes.data || null);
+    } catch (e) {
+      const status = e.response?.status;
+      if (status === 403) {
+        toast.error('You do not have permission to view this task');
+      } else if (status === 404) {
+        toast.error('Task not found');
+      } else {
+        toast.error('Failed to load task details');
+      }
+      setLoading(false);
+      return;
+    }
+    try {
+      const [commentsRes, attachmentsRes] = await Promise.all([
         api.get(`/comments/${id}`),
         api.get(`/attachments/${id}`)
       ]);
-      setTask(taskRes.data.task || taskRes.data || null);
       setComments(commentsRes.data.comments || commentsRes.data || []);
       setAttachments(attachmentsRes.data.attachments || attachmentsRes.data || []);
     } catch (e) {
-      toast.error('Failed to load task details');
-      console.error(e);
+      console.error('Failed to load comments/attachments', e);
     } finally {
       setLoading(false);
     }
@@ -90,6 +102,17 @@ export default function TaskDetailPage() {
       toast.error('Failed to update status');
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const handleDeleteTask = async () => {
+    if (!window.confirm('Are you sure you want to delete this task? This action cannot be undone.')) return;
+    try {
+      await api.delete(`/tasks/${id}`);
+      toast.success('Task deleted successfully');
+      navigate('/tasks');
+    } catch (e) {
+      toast.error(e.response?.data?.description || 'Failed to delete task');
     }
   };
 
@@ -271,6 +294,13 @@ export default function TaskDetailPage() {
                       onClick={() => navigate(`/tasks/edit/${id}`)}
                       style={{ backgroundColor: 'var(--accent)', color: '#fff', border: 'none', borderRadius: '8px', padding: '6px 12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}>
                       Edit
+                    </button>
+                  )}
+                  {isAdminOrPM && (
+                    <button
+                      onClick={handleDeleteTask}
+                      style={{ backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '8px', padding: '6px 12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}>
+                      Delete
                     </button>
                   )}
                 </div>
