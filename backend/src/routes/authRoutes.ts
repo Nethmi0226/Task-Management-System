@@ -5,7 +5,8 @@ import {
   changePassword,
   forgotPassword,
   verifyResetToken,
-  resetPassword
+  resetPassword,
+  getUsers
 } from '../controllers/authController';
 import { verifyToken, requireRole } from '../middleware/authMiddleware';
 
@@ -169,5 +170,7 @@ router.get('/verify-reset-token/:token', verifyResetToken);
  */
 router.post('/reset-password/:token', resetPassword);
 router.post('/reset-password', resetPassword);
+
+router.get('/users', verifyToken, getUsers);
 
 export default router;

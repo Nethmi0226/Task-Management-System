@@ -214,10 +214,18 @@ export const updateTask = async (req: AuthenticatedRequest, res: Response): Prom
 
     const assignees = (task as any).assignees as User[];
 
-    // Role-based restrictions
+    // Project Manager can only edit tasks they created
+    if (req.user!.role === 'ProjectManager' && task.createdBy !== req.user!.userId) {
+      // PM can still update status of any task they can view
+      if (title || description || dueDate || priority) {
+        res.status(403).json({ errorCode: 403, message: 'Forbidden', description: 'You can only edit tasks you created' });
+        return;
+      }
+    }
+
+    // Collaborator can only update status of assigned tasks
     if (req.user!.role === 'Collaborator') {
-      // Collaborator: can only update status of tasks they are assigned to
-      const isAssigned = assignees.some((a: User) => Number(a.id) === Number(req.user!.userId));
+      const isAssigned = assignees.some((a: User) => a.id === req.user!.userId);
       if (!isAssigned) {
         res.status(403).json({ errorCode: 403, message: 'Forbidden', description: 'You can only update tasks assigned to you' });
         return;
@@ -227,8 +235,6 @@ export const updateTask = async (req: AuthenticatedRequest, res: Response): Prom
         return;
       }
     }
-    // ProjectManager: can edit and delete any task (no restriction here)
-    // Admin: full access (no restriction here)
 
     if (title !== undefined) {
       if (!title || !title.trim()) { res.status(400).json({ errorCode: 400, message: 'Bad Request', description: 'Title cannot be empty' }); return; }
@@ -259,7 +265,6 @@ export const updateTask = async (req: AuthenticatedRequest, res: Response): Prom
       status: status || task.status
     });
 
-    // Send real-time notification if status changed
     if (status && status !== oldStatus) {
       const io = getIO(req);
       const assigneeIds = assignees.map((a: User) => a.id);
@@ -399,8 +404,15 @@ export const deleteTask = async (req: AuthenticatedRequest, res: Response): Prom
       return;
     }
 
-    if (req.user!.role !== 'Admin' && req.user!.role !== 'ProjectManager') {
+    // Collaborator cannot delete any task
+    if (req.user!.role === 'Collaborator') {
       res.status(403).json({ errorCode: 403, message: 'Forbidden', description: 'You do not have permission to delete tasks' });
+      return;
+    }
+
+    // Project Manager can only delete tasks they created
+    if (req.user!.role === 'ProjectManager' && task.createdBy !== req.user!.userId) {
+      res.status(403).json({ errorCode: 403, message: 'Forbidden', description: 'You can only delete tasks you created' });
       return;
     }
 

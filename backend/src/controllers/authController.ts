@@ -116,6 +116,31 @@ export const register = async (req: AuthenticatedRequest, res: Response): Promis
   }
 };
 
+// ── GET ALL USERS ──────────────────────────────────────
+// GET /api/auth/users
+// Accessible by: Admin, ProjectManager (all users); Collaborator (only Collaborators and ProjectManagers)
+export const getUsers = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const requestingRole = req.user!.role;
+
+    // All roles can call this endpoint; filter is applied per role below
+    const users = await User.findAll({
+      attributes: ['id', 'name', 'email', 'role', 'isActive'],
+      order: [['name', 'ASC']],
+    });
+
+    // Admin sees everyone; ProjectManager and Collaborator see only non-Admin users
+    const filtered = requestingRole === 'Admin'
+      ? users
+      : users.filter(u => u.role !== 'Admin');
+
+    res.status(200).json({ users: filtered });
+  } catch (error) {
+    console.error('Get users error:', error);
+    res.status(500).json({ errorCode: 500, message: 'Internal Server Error', description: 'Something went wrong on the server' });
+  }
+};
+
 // ── CHANGE PASSWORD ────────────────────────────────────
 // POST /api/auth/change-password
 export const changePassword = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
