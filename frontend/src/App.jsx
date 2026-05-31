@@ -18,6 +18,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
 import ChangePasswordPage from './pages/ChangePasswordPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
+import AnalyticsPage from './pages/AnalyticsPage.jsx';
 
 function AppRoutes() {
   const [showIntro, setShowIntro] = useState(
@@ -40,7 +41,7 @@ function AppRoutes() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route path="/home" element={
           <PrivateRoute><HomePage /></PrivateRoute>
@@ -66,6 +67,12 @@ function AppRoutes() {
         <Route path="/change-password" element={
           <PrivateRoute><ChangePasswordPage /></PrivateRoute>
         } />
+
+        <Route path="/analytics" element={
+  <PrivateRoute roles={['Admin']}>
+    <AnalyticsPage />
+  </PrivateRoute>
+} />
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

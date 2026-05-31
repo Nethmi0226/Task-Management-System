@@ -24,7 +24,7 @@ const StatCard = ({ icon, label, value, color, onClick }) => (
 
 export default function HomePage() {
   const { user } = useAuth();
-  const { notifications, unreadCount } = useNotifications();
+  const { notifications, unreadCount, markAllAsRead } = useNotifications();
   const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [tasks, setTasks] = useState([]);
@@ -125,41 +125,51 @@ export default function HomePage() {
             )}
           </div>
 
-          {/* Recent Notifications */}
-          <div style={{ backgroundColor: 'var(--bg-card)', borderRadius: '14px', padding: '20px', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--border)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <h2 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text-primary)' }}>
-                Notifications
-                {unreadCount > 0 && (
-                  <span style={{ marginLeft: '8px', backgroundColor: 'var(--danger)', color: '#fff', borderRadius: '20px', fontSize: '10px', padding: '2px 7px', fontWeight: '700' }}>
-                    {unreadCount}
-                  </span>
-                )}
-              </h2>
-            </div>
-
-            {notifications.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
-                <p style={{ fontSize: '28px', marginBottom: '8px' }}>🔔</p>
-                <p style={{ fontSize: '13px' }}>No notifications</p>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {notifications.slice(0, 6).map(notif => (
-                  <div key={notif.id} style={{ padding: '10px 12px', borderRadius: '10px', backgroundColor: notif.isRead ? 'transparent' : 'var(--accent-light)', border: '1px solid var(--border)' }}>
-                    <p style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '2px' }}>{notif.title}</p>
-                    <p style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{notif.message}</p>
-                    <p style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>
-                      {formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true })}
-                    </p>
-                  </div>
-                ))}
-              </div>
+      {/* Recent Notifications */}
+      <div style={{ backgroundColor: 'var(--bg-card)', borderRadius: '14px', padding: '20px', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--border)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text-primary)' }}>
+            Notifications
+            {unreadCount > 0 && (
+              <span style={{ marginLeft: '8px', backgroundColor: 'var(--danger)', color: '#fff', borderRadius: '20px', fontSize: '10px', padding: '2px 7px', fontWeight: '700' }}>
+                {unreadCount}
+              </span>
+            )}
+          </h2>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            {unreadCount > 0 && (
+              <button
+                onClick={async () => {
+                  try {
+                    await api.patch('/notifications/read-all');
+                    markAllAsRead();
+                  } catch (e) { console.error(e); }
+                }}
+                style={{ background: 'none', border: 'none', color: 'var(--accent)', fontSize: '12px', fontWeight: '500', cursor: 'pointer', padding: '4px 8px', borderRadius: '6px' }}>
+                Mark all read
+              </button>
             )}
           </div>
-
         </div>
+
+        {notifications.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: '28px', marginBottom: '8px' }}>🔔</p>
+            <p style={{ fontSize: '13px' }}>No notifications</p>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '320px', overflowY: 'auto' }}>
+            {notifications.map(n => (
+              <div key={n.id} style={{ padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--border)', backgroundColor: n.isRead ? 'transparent' : 'var(--accent-light)' }}>
+                <p style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-primary)', margin: '0 0 4px' }}>{n.message}</p>
+                <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: 0 }}>{formatDistanceToNow(new Date(n.createdAt), { addSuffix: true })}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+    </div>
+  </div>
     </Layout>
   );
 }

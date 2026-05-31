@@ -1,103 +1,227 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const navItems = [
-  { to: '/home', icon: '🏠', label: 'Dashboard', roles: ['Admin', 'ProjectManager', 'Collaborator'] },
-  { to: '/tasks', icon: '📋', label: 'Tasks', roles: ['Admin', 'ProjectManager', 'Collaborator'] },
-  { to: '/users', icon: '👥', label: 'Users', roles: ['Admin'] },
-  { to: '/team', icon: '👷', label: 'My Team', roles: ['ProjectManager'] },
+  { to: '/home',  icon: '🏠', label: 'Dashboard', roles: ['Admin', 'ProjectManager', 'Collaborator'] },
+  { to: '/tasks', icon: '📋', label: 'Tasks',     roles: ['Admin', 'ProjectManager', 'Collaborator'] },
+  { to: '/users', icon: '👥', label: 'Users',     roles: ['Admin'] },
+  { to: '/analytics', icon: '📊', label: 'Analytics', roles: ['Admin'] },
+  { to: '/team',  icon: '👷', label: 'My Team',   roles: ['ProjectManager'] },
 ];
+
+// Role → accent color
+const roleColor = {
+  Admin:          '#6366f1',
+  ProjectManager: '#3b9eed',
+  Collaborator:   '#10b981',
+};
+
+const roleLabel = {
+  Admin:          'Admin',
+  ProjectManager: 'Project Manager',
+  Collaborator:   'Collaborator',
+};
 
 export default function Sidebar({ isOpen, onClose }) {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { theme } = useTheme();          // 'dark' | 'light'
+  const navigate  = useNavigate();
 
+  const isDark   = theme === 'dark';
   const filtered = navItems.filter(item => item.roles.includes(user?.role));
+  const accent   = roleColor[user?.role] || '#6366f1';
+
+  // Theme tokens computed locally so every value is explicit
+  const t = isDark ? {
+    sidebar:      '#13152a',           // deep navy
+    border:       'rgba(255,255,255,0.07)',
+    navLabel:     'rgba(255,255,255,0.28)',
+    navDefault:   'rgba(255,255,255,0.55)',
+    navActive:    '#ffffff',
+    navActiveBg:  `${accent}28`,
+    navHoverBg:   'rgba(255,255,255,0.06)',
+    navActiveBorder: accent,
+    userCard:     'rgba(255,255,255,0.05)',
+    userCardBorder:'rgba(255,255,255,0.08)',
+    userName:     'rgba(255,255,255,0.9)',
+    userRole:     'rgba(255,255,255,0.42)',
+    divider:      'rgba(255,255,255,0.07)',
+    logoText:     '#ffffff',
+  } : {
+    sidebar:      '#ffffff',
+    border:       'rgba(0,0,0,0.07)',
+    navLabel:     'rgba(0,0,0,0.35)',
+    navDefault:   '#4b5563',
+    navActive:    accent,
+    navActiveBg:  `${accent}14`,
+    navHoverBg:   'rgba(0,0,0,0.04)',
+    navActiveBorder: accent,
+    userCard:     '#f8fafc',
+    userCardBorder:'rgba(0,0,0,0.08)',
+    userName:     '#111827',
+    userRole:     '#6b7280',
+    divider:      'rgba(0,0,0,0.07)',
+    logoText:     '#111827',
+  };
 
   return (
     <>
-      {/* Overlay for mobile */}
+      {/* Mobile overlay */}
       {isOpen && (
-        <div onClick={onClose} style={styles.overlay} />
+        <div
+          onClick={onClose}
+          style={{
+            position: 'fixed', inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.45)',
+            backdropFilter: 'blur(2px)',
+            zIndex: 98,
+          }}
+        />
       )}
 
       <aside style={{
-        ...styles.sidebar,
+        position: 'fixed',
+        top: 'var(--navbar-height)',
+        left: 0,
+        bottom: 0,
+        width: 'var(--sidebar-width)',
+        backgroundColor: t.sidebar,
+        borderRight: `1px solid ${t.border}`,
+        display: 'flex',
+        flexDirection: 'column',
+        zIndex: 99,
+        transition: 'transform 0.25s ease, background-color 0.2s ease',
         transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
+        overflowY: 'auto',
+        overflowX: 'hidden',
       }}>
-        {/* Nav links */}
-        <nav style={styles.nav}>
-          <p style={styles.navLabel}>MENU</p>
+
+        {/* ── Nav section ── */}
+        <nav style={{ flex: 1, padding: '20px 12px 12px' }}>
+          {/* Section label */}
+          <p style={{
+            fontSize: '10px',
+            fontWeight: '700',
+            letterSpacing: '1.2px',
+            color: t.navLabel,
+            padding: '0 10px',
+            marginBottom: '8px',
+            textTransform: 'uppercase',
+          }}>
+            Menu
+          </p>
+
           {filtered.map(item => (
-            <NavLink key={item.to} to={item.to}
+            <NavLink
+              key={item.to}
+              to={item.to}
               onClick={onClose}
               style={({ isActive }) => ({
-                ...styles.navItem,
-                backgroundColor: isActive ? 'rgba(255,255,255,0.12)' : 'transparent',
-                color: isActive ? '#ffffff' : 'rgba(255,255,255,0.6)'
-              })}>
-              <span style={styles.navIcon}>{item.icon}</span>
-              <span style={styles.navText}>{item.label}</span>
+                display: 'flex',
+                alignItems: 'center',
+                gap: '11px',
+                padding: '10px 12px',
+                borderRadius: '10px',
+                marginBottom: '3px',
+                fontSize: '13px',
+                fontWeight: isActive ? '600' : '500',
+                textDecoration: 'none',
+                color: isActive ? t.navActive : t.navDefault,
+                backgroundColor: isActive ? t.navActiveBg : 'transparent',
+                borderLeft: isActive ? `3px solid ${t.navActiveBorder}` : '3px solid transparent',
+                transition: 'all 0.15s ease',
+                position: 'relative',
+              })}
+              onMouseEnter={e => {
+                const isActive = e.currentTarget.style.borderLeftColor !== 'transparent';
+                if (!isActive) e.currentTarget.style.backgroundColor = t.navHoverBg;
+              }}
+              onMouseLeave={e => {
+                const isActive = e.currentTarget.getAttribute('aria-current') === 'page';
+                if (!isActive) e.currentTarget.style.backgroundColor = 'transparent';
+              }}
+            >
+              <span style={{ fontSize: '16px', width: '22px', textAlign: 'center', flexShrink: 0 }}>
+                {item.icon}
+              </span>
+              <span>{item.label}</span>
             </NavLink>
           ))}
         </nav>
 
-        {/* Bottom user info */}
-        <div style={styles.bottomUser}>
-          <div style={styles.userDot} />
-          <div>
-            <p style={styles.userName}>{user?.name}</p>
-            <p style={styles.userRole}>{user?.role}</p>
+        {/* ── Divider ── */}
+        <div style={{ height: '1px', backgroundColor: t.divider, margin: '0 16px' }} />
+
+        {/* ── Bottom user card ── */}
+        <div style={{ padding: '12px' }}>
+          <div style={{
+            backgroundColor: t.userCard,
+            border: `1px solid ${t.userCardBorder}`,
+            borderRadius: '12px',
+            padding: '12px 14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '11px',
+          }}>
+            {/* Avatar circle */}
+            <div style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              backgroundColor: accent,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '13px',
+              fontWeight: '800',
+              color: '#fff',
+              flexShrink: 0,
+              textTransform: 'uppercase',
+              boxShadow: `0 0 0 3px ${accent}28`,
+            }}>
+              {user?.name?.charAt(0) || '?'}
+            </div>
+
+            {/* Name + role */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{
+                fontSize: '12px',
+                fontWeight: '700',
+                color: t.userName,
+                margin: 0,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}>
+                {user?.name}
+              </p>
+              <span style={{
+                display: 'inline-block',
+                fontSize: '10px',
+                fontWeight: '600',
+                color: accent,
+                backgroundColor: `${accent}18`,
+                padding: '1px 7px',
+                borderRadius: '20px',
+                marginTop: '3px',
+              }}>
+                {roleLabel[user?.role] || user?.role}
+              </span>
+            </div>
+
+            {/* Online dot */}
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: '#10b981',
+              flexShrink: 0,
+              boxShadow: '0 0 0 2px rgba(16,185,129,0.25)',
+            }} />
           </div>
         </div>
       </aside>
     </>
   );
 }
-
-const styles = {
-  overlay: {
-    position: 'fixed', inset: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    zIndex: 98,
-    '@media (min-width: 769px)': { display: 'none' }
-  },
-  sidebar: {
-    position: 'fixed', top: 'var(--navbar-height)',
-    left: 0, bottom: 0,
-    width: 'var(--sidebar-width)',
-    backgroundColor: 'var(--bg-sidebar)',
-    display: 'flex', flexDirection: 'column',
-    zIndex: 99, padding: '16px 0',
-    transition: 'transform 0.25s ease',
-    overflowY: 'auto'
-  },
-  nav: { flex: 1, padding: '0 12px' },
-  navLabel: {
-    fontSize: '10px', fontWeight: '700',
-    color: 'rgba(255,255,255,0.3)',
-    letterSpacing: '1px', padding: '8px 12px 4px'
-  },
-  navItem: {
-    display: 'flex', alignItems: 'center', gap: '10px',
-    padding: '10px 12px', borderRadius: 'var(--radius-md)',
-    marginBottom: '4px', fontSize: '13px',
-    fontWeight: '500', transition: 'all 0.15s',
-    textDecoration: 'none'
-  },
-  navIcon: { fontSize: '16px', width: '20px', textAlign: 'center' },
-  navText: {},
-  bottomUser: {
-    margin: '0 12px 8px',
-    padding: '12px',
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderRadius: 'var(--radius-md)',
-    display: 'flex', alignItems: 'center', gap: '10px'
-  },
-  userDot: {
-    width: '8px', height: '8px', borderRadius: '50%',
-    backgroundColor: '#10b981', flexShrink: 0
-  },
-  userName: { fontSize: '12px', fontWeight: '600', color: 'rgba(255,255,255,0.85)' },
-  userRole: { fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '1px' }
-};
