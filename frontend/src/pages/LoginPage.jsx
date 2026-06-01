@@ -17,12 +17,14 @@ export default function LoginPage() {
   const [showPass, setShowPass] = useState(false);
 
   const handleChange = (e) => {
+    // Do NOT clear error here — let the user read it while they correct their input
     setForm({ ...form, [e.target.name]: e.target.value });
-    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Clear previous error only when user tries again
+    setError('');
     if (!form.email || !form.password) {
       setError('Please fill in all fields.');
       return;
@@ -37,7 +39,11 @@ export default function LoginPage() {
         navigate('/home');
       }
     } catch (err) {
-      setError(err.response?.data?.description || err.response?.data?.message || 'Login failed.');
+      const msg =
+        err.response?.data?.description ||
+        err.response?.data?.message ||
+        'Login failed. Please try again.';
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -74,9 +80,25 @@ export default function LoginPage() {
           <p style={{ fontSize: '14px', color: isDark ? '#64748b' : '#9ca3af', margin: 0 }}>Sign in to your TMS workspace</p>
         </div>
 
+        {/* Error message */}
         {error && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: isDark ? 'rgba(239,68,68,0.12)' : '#fef2f2', border: `1px solid ${isDark ? 'rgba(239,68,68,0.3)' : '#fecaca'}`, color: isDark ? '#f87171' : '#dc2626', borderRadius: '10px', padding: '12px 14px', fontSize: '13px', marginBottom: '20px' }}>
-            ⚠️ {error}
+          <div style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '10px',
+            backgroundColor: isDark ? 'rgba(239,68,68,0.12)' : '#fef2f2',
+            border: `1px solid ${isDark ? 'rgba(239,68,68,0.35)' : '#fecaca'}`,
+            color: isDark ? '#f87171' : '#dc2626',
+            borderRadius: '10px',
+            padding: '12px 14px',
+            fontSize: '13px',
+            marginBottom: '20px',
+            lineHeight: '1.45',
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0, marginTop: '1px' }}>
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>{error}</span>
           </div>
         )}
 
@@ -90,7 +112,7 @@ export default function LoginPage() {
               </span>
               <input name="email" type="email" value={form.email} onChange={handleChange}
                 placeholder="you@example.com" autoComplete="email"
-                style={{ width: '100%', padding: '11px 12px 11px 40px', borderRadius: '10px', border: `1px solid ${isDark ? '#334155' : '#e5e7eb'}`, backgroundColor: isDark ? '#0f172a' : '#f9fafb', color: isDark ? '#f1f5f9' : '#1a1a2e', fontSize: '14px', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }} />
+                style={{ width: '100%', padding: '11px 12px 11px 40px', borderRadius: '10px', border: `1px solid ${error ? (isDark ? 'rgba(239,68,68,0.5)' : '#fca5a5') : (isDark ? '#334155' : '#e5e7eb')}`, backgroundColor: isDark ? '#0f172a' : '#f9fafb', color: isDark ? '#f1f5f9' : '#1a1a2e', fontSize: '14px', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }} />
             </div>
           </div>
 
@@ -102,7 +124,7 @@ export default function LoginPage() {
               </span>
               <input name="password" type={showPass ? 'text' : 'password'} value={form.password} onChange={handleChange}
                 placeholder="Enter your password" autoComplete="current-password"
-                style={{ width: '100%', padding: '11px 40px 11px 40px', borderRadius: '10px', border: `1px solid ${isDark ? '#334155' : '#e5e7eb'}`, backgroundColor: isDark ? '#0f172a' : '#f9fafb', color: isDark ? '#f1f5f9' : '#1a1a2e', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} />
+                style={{ width: '100%', padding: '11px 40px 11px 40px', borderRadius: '10px', border: `1px solid ${error ? (isDark ? 'rgba(239,68,68,0.5)' : '#fca5a5') : (isDark ? '#334155' : '#e5e7eb')}`, backgroundColor: isDark ? '#0f172a' : '#f9fafb', color: isDark ? '#f1f5f9' : '#1a1a2e', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} />
               <button type="button" onClick={() => setShowPass(p => !p)}
                 style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: isDark ? '#475569' : '#9ca3af', display: 'flex', padding: 0 }}>
                 {showPass
@@ -128,7 +150,7 @@ export default function LoginPage() {
         </form>
 
         <p style={{ textAlign: 'center', marginTop: '24px', fontSize: '12px', color: isDark ? '#475569' : '#9ca3af' }}>
-          Department of Industrial Management · University of Kelaniya
+          TMS
         </p>
       </div>
     </div>
