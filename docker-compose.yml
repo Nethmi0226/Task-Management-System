@@ -45,8 +45,6 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-    # Ubuntu: "80:80"
-    # Windows: "8080:80"
       - "8080:80"
     depends_on:
       - backend
