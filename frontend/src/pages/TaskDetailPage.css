@@ -1,0 +1,39 @@
+.att-row:hover {
+  background-color: var(--bg-primary) !important;
+}
+
+.cmt-box:hover {
+  border-color: var(--border-focus) !important;
+}
+
+.filter-btn {
+  transition: all 0.15s;
+}
+
+.status-btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.icon-btn:hover {
+  background-color: var(--bg-primary) !important;
+}
+
+.task-detail-textarea:focus,
+.task-detail-input:focus {
+  border-color: var(--accent) !important;
+  outline: none;
+}
+
+.task-detail-page ::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.task-detail-page ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.task-detail-page ::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
