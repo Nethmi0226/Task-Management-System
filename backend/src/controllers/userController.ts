@@ -1,12 +1,18 @@
 import { Response } from 'express';
 import { Op } from 'sequelize';
 import User from '../models/User';
+import Task from '../models/Task';
+import Comment from '../models/Comment';
+import Attachment from '../models/Attachment';
+import Notification from '../models/Notification';
+import TaskAssignee from '../models/TaskAssignee';
 import {
   sendAccountUpdateEmail,
   sendAccountDeletedEmail,
   sendDeactivationEmail
 } from '../utils/emailService';
 import { AuthenticatedRequest } from '../middleware/authMiddleware';
+import sequelize from '../config/db';
 
 // ── GET ALL USERS ──────────────────────────────────────
 // GET /api/users
@@ -47,7 +53,6 @@ export const getAllUsers = async (req: AuthenticatedRequest, res: Response): Pro
 // GET /api/users/:id
 export const getUserById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    // Cast to string — req.params values are string | string[] in some TS configs
     const id = String(req.params.id);
 
     const user = await User.findByPk(id, {
@@ -124,7 +129,6 @@ export const updateUser = async (req: AuthenticatedRequest, res: Response): Prom
     const id     = String(req.params.id);
     const { name, email, role } = req.body as UpdateUserRequest;
 
-    // Block any attempt to update password through this endpoint
     if (req.body.password) {
       res.status(400).json({ errorCode: 400, message: 'Bad Request', description: 'Password cannot be updated through this endpoint' });
       return;
@@ -141,7 +145,6 @@ export const updateUser = async (req: AuthenticatedRequest, res: Response): Prom
       return;
     }
 
-    // Admin cannot update another Admin account
     if (user.role === 'Admin' && user.id !== req.user!.userId) {
       res.status(403).json({ errorCode: 403, message: 'Forbidden', description: 'You cannot update another Admin account' });
       return;
@@ -152,7 +155,6 @@ export const updateUser = async (req: AuthenticatedRequest, res: Response): Prom
       return;
     }
 
-    // Validate name
     if (name !== undefined) {
       if (!name || !name.trim()) {
         res.status(400).json({ errorCode: 400, message: 'Bad Request', description: 'Name cannot be empty' });
@@ -173,7 +175,6 @@ export const updateUser = async (req: AuthenticatedRequest, res: Response): Prom
       }
     }
 
-    // Validate email
     if (email !== undefined) {
       if (!email || !email.trim()) {
         res.status(400).json({ errorCode: 400, message: 'Bad Request', description: 'Email cannot be empty' });
@@ -188,7 +189,6 @@ export const updateUser = async (req: AuthenticatedRequest, res: Response): Prom
         const emailExists = await User.findOne({
           where: {
             email: email.trim(),
-            // parseInt ensures the comparison is number vs number
             id: { [Op.ne]: parseInt(id, 10) }
           }
         });
@@ -199,7 +199,6 @@ export const updateUser = async (req: AuthenticatedRequest, res: Response): Prom
       }
     }
 
-    // Validate role
     if (role !== undefined) {
       if (!role || !role.trim()) {
         res.status(400).json({ errorCode: 400, message: 'Bad Request', description: 'Role cannot be empty' });
@@ -212,7 +211,6 @@ export const updateUser = async (req: AuthenticatedRequest, res: Response): Prom
       }
     }
 
-    // Track what actually changed to include in the email
     const updatedFields: Record<string, string> = {};
     if (name  && name.trim()  !== user.name)  updatedFields['Name']  = name.trim();
     if (email && email.trim() !== user.email) updatedFields['Email'] = email.trim();
@@ -224,7 +222,6 @@ export const updateUser = async (req: AuthenticatedRequest, res: Response): Prom
       role:  role  || user.role
     });
 
-    // Send update email only if something actually changed
     if (Object.keys(updatedFields).length > 0) {
       try {
         await sendAccountUpdateEmail(user.email, user.name, updatedFields);
@@ -272,7 +269,6 @@ export const deactivateUser = async (req: AuthenticatedRequest, res: Response): 
 
     await user.update({ isActive: false });
 
-    // Send deactivation email notification
     try {
       await sendDeactivationEmail(user.email, user.name);
     } catch (emailError: any) {
@@ -313,8 +309,8 @@ export const activateUser = async (req: AuthenticatedRequest, res: Response): Pr
 
 // ── DELETE USER ────────────────────────────────────────
 // DELETE /api/users/:id
-// Manually cleans up all related records before deleting the user
-// This works even if CASCADE is not yet set on the database foreign keys
+// Manually cleans up all related records before deleting the user.
+// Works even if CASCADE is not set on DB foreign keys.
 export const deleteUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const id     = String(req.params.id);
@@ -332,7 +328,7 @@ export const deleteUser = async (req: AuthenticatedRequest, res: Response): Prom
       return;
     }
 
-    // Admin deleting their own account — check another Admin exists first
+    // Admin deleting their own account — ensure at least one other Admin exists
     if (user.id === req.user!.userId && user.role === 'Admin') {
       const otherAdminCount = await User.count({
         where: {
@@ -354,39 +350,39 @@ export const deleteUser = async (req: AuthenticatedRequest, res: Response): Prom
     const deletedUserEmail = user.email;
     const deletedUserName  = user.name;
 
-    // ── Manual cascade cleanup ─────────────────────────
-    // Cleans up all foreign key references before deleting the user
-    // so deletion works regardless of DB FK configuration
-    const TaskAssignee = (await import('../models/TaskAssignee')).default;
-    const Notification = (await import('../models/Notification')).default;
-    const Comment      = (await import('../models/Comment')).default;
-    const Attachment   = (await import('../models/Attachment')).default;
-    const Task         = (await import('../models/Task')).default;
+    // ── Cascade cleanup (order matters due to FK constraints) ─────────────
 
     // 1. Remove this user from all task assignments
     await TaskAssignee.destroy({ where: { userId } });
 
-    // 2. Delete all notifications for this user
+    // 2. Delete all notifications belonging to this user
     await Notification.destroy({ where: { userId } });
 
-    // 3. Set userId to NULL on comments (keep comment text — do not delete it)
-    await Comment.update({ userId: null as any }, { where: { userId } });
+    // 3. Nullify userId on comments — comment text is kept, author shown as Unknown
+   await sequelize.query(
+  'UPDATE comments SET userId = NULL WHERE userId = :userId',
+  { replacements: { userId } }
+);
 
-    // 4. Set uploadedBy to NULL on attachments (keep file records intact)
-    await Attachment.update({ uploadedBy: null as any }, { where: { uploadedBy: userId } });
+    // 4. Nullify uploadedBy on attachments — files are kept, uploader shown as Unknown
+    await sequelize.query(
+  'UPDATE attachments SET uploadedBy = NULL WHERE uploadedBy = :userId',
+  { replacements: { userId } }
+);
 
-    // 5. Set createdBy to NULL on tasks (task stays, creator reference is cleared)
-    await Task.update({ createdBy: null as any }, { where: { createdBy: userId } });
+    // 5. Nullify createdBy on tasks — tasks are kept, creator shown as Unknown
+    await sequelize.query(
+  'UPDATE tasks SET createdBy = NULL WHERE createdBy = :userId',
+  { replacements: { userId } }
+);
 
-    // 6. Finally destroy the user record
+    // 6. Destroy the user record itself
     await user.destroy();
 
-    // Send deletion notification email
-    try {
-      await sendAccountDeletedEmail(deletedUserEmail, deletedUserName);
-    } catch (emailError: any) {
+    // Send deletion email (fire-and-forget — failure should not affect the response)
+    sendAccountDeletedEmail(deletedUserEmail, deletedUserName).catch((emailError: any) => {
       console.error('Deletion email sending failed:', emailError.message);
-    }
+    });
 
     res.status(200).json({ message: `User ${deletedUserName} has been permanently deleted` });
   } catch (error: any) {

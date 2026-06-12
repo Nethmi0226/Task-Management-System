@@ -7,7 +7,7 @@ export interface CommentAttributes {
   id: number;
   content: string;
   taskId: number;
-  userId: number;
+  userId: number | null;          // null when the author's account has been deleted
   attachmentId: number | null;
   commentFileName: string | null;
   commentStoredFileName: string | null;
@@ -27,7 +27,7 @@ class Comment extends Model<CommentAttributes, CommentCreationAttributes> implem
   public id!: number;
   public content!: string;
   public taskId!: number;
-  public userId!: number;
+  public userId!: number | null;  // null when the author's account has been deleted
   public attachmentId!: number | null;
   public commentFileName!: string | null;
   public commentStoredFileName!: string | null;
@@ -60,10 +60,11 @@ Comment.init(
       references: { model: Task, key: 'id' }
     },
 
-    // Who wrote this comment
+    // Who wrote this comment — SET NULL when the user account is deleted
+    // The comment text is kept; the author will appear as "Unknown User" in the UI
     userId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,            // changed from false — required for user deletion cascade
       references: { model: User, key: 'id' }
     },
 
