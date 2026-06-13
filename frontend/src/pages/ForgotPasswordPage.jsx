@@ -64,7 +64,7 @@ export default function ForgotPasswordPage() {
               </div>
 
               <button type="submit" disabled={loading} style={{ padding: '13px', backgroundColor: loading ? '#6ea8da' : '#0078d4', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                {loading ? <LoadingSpinner size={20} /> : 'Send Reset Link'}
+                {loading ? <LoadingSpinner size={20} inline /> : 'Send Reset Link'}
               </button>
             </form>
 
