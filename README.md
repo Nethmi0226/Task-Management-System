@@ -96,8 +96,8 @@ task-management-system/
 
 ### 1. Prerequisites
 
-- Node.js (v18 or higher)
-- npm or yarn
+- Node.js (v24 or higher)
+- npm
 - MySQL (or Azure Access)
 
 ### 2. Clone the Repository
