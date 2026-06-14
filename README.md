@@ -31,6 +31,7 @@ Custom React hooks for reusable logic
 
 The repository is organized into a Monorepo structure for independent scaling of the frontend and backend.
 
+```
 task-management-system/
 │
 ├── backend/
@@ -79,6 +80,7 @@ task-management-system/
 ├── .gitignore
 ├── LICENSE
 └── README.md
+```
 
 ---
 

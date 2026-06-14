@@ -210,7 +210,7 @@ export default function ResetPasswordPage() {
 
           <button type="submit" disabled={loading}
             style={{ padding: '13px', backgroundColor: loading ? '#6ea8da' : '#0078d4', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            {loading ? <LoadingSpinner size={20} /> : 'Reset Password'}
+            {loading ? <LoadingSpinner size={20} inline /> : 'Reset Password'}
           </button>
         </form>
 
