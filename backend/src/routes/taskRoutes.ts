@@ -13,29 +13,225 @@ import { verifyToken, requireRole } from '../middleware/authMiddleware';
 
 const router = Router();
 
-// POST /api/tasks — Admin and Project Manager can create tasks
+/**
+ * @swagger
+ * /api/tasks:
+ *   post:
+ *     summary: Create a new task (Admin and Project Manager only)
+ *     tags: [Tasks]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [title, priority, status, dueDate]
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: Design login page
+ *               description:
+ *                 type: string
+ *                 example: Create a responsive login page
+ *               priority:
+ *                 type: string
+ *                 enum: [Low, Medium, High]
+ *               status:
+ *                 type: string
+ *                 enum: [To Do, In Progress, Done]
+ *               dueDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2025-12-31"
+ *               assigneeIds:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *                 example: [2, 3]
+ *     responses:
+ *       201:
+ *         description: Task created successfully
+ *       400:
+ *         description: Validation error
+ *       403:
+ *         description: Forbidden
+ */
 router.post('/', verifyToken, requireRole('Admin', 'ProjectManager'), createTask);
 
-// GET /api/tasks — all roles can view (controller filters by role)
+/**
+ * @swagger
+ * /api/tasks:
+ *   get:
+ *     summary: Get all tasks (filtered by role)
+ *     tags: [Tasks]
+ *     description: Admin and ProjectManager see all tasks. Collaborator sees only assigned tasks.
+ *     responses:
+ *       200:
+ *         description: List of task objects with assignees
+ */
 router.get('/', verifyToken, getAllTasks);
 
-// GET /api/tasks/trigger-reminders — Admin only, for testing deadline emails
-// Must be BEFORE /:id route otherwise Express reads "trigger-reminders" as an ID
+/**
+ * @swagger
+ * /api/tasks/trigger-reminders:
+ *   get:
+ *     summary: Manually trigger deadline reminder emails (Admin only)
+ *     tags: [Tasks]
+ *     description: Runs the same job as the daily 8AM scheduler. Useful for testing.
+ *     responses:
+ *       200:
+ *         description: Reminders triggered successfully
+ *       403:
+ *         description: Forbidden
+ */
 router.get('/trigger-reminders', verifyToken, requireRole('Admin'), triggerReminders);
 
-// GET /api/tasks/:id — all roles (controller handles permission check)
+/**
+ * @swagger
+ * /api/tasks/{id}:
+ *   get:
+ *     summary: Get a single task by ID
+ *     tags: [Tasks]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Task ID
+ *     responses:
+ *       200:
+ *         description: Task object with assignees and creator
+ *       404:
+ *         description: Task not found
+ *       403:
+ *         description: Forbidden — Collaborator trying to access unassigned task
+ */
 router.get('/:id', verifyToken, getTaskById);
 
-// PUT /api/tasks/:id — all roles (controller restricts Collaborator to status only)
+/**
+ * @swagger
+ * /api/tasks/{id}:
+ *   put:
+ *     summary: Update task fields
+ *     tags: [Tasks]
+ *     description: Admin can update all fields. ProjectManager can update own tasks. Collaborator can only update status on assigned tasks.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               priority:
+ *                 type: string
+ *                 enum: [Low, Medium, High]
+ *               status:
+ *                 type: string
+ *                 enum: [To Do, In Progress, Done]
+ *               dueDate:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: Task updated successfully
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Task not found
+ */
 router.put('/:id', verifyToken, updateTask);
 
-// POST /api/tasks/:id/members — Admin and Project Manager only
+/**
+ * @swagger
+ * /api/tasks/{id}/members:
+ *   post:
+ *     summary: Add members to a task (Admin and Project Manager only)
+ *     tags: [Tasks]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userIds]
+ *             properties:
+ *               userIds:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *                 example: [2, 3]
+ *     responses:
+ *       200:
+ *         description: Members added successfully
+ *       404:
+ *         description: Task not found
+ */
 router.post('/:id/members', verifyToken, requireRole('Admin', 'ProjectManager'), addTaskMembers);
 
-// DELETE /api/tasks/:id/members/:userId — Admin and Project Manager only
+/**
+ * @swagger
+ * /api/tasks/{id}/members/{userId}:
+ *   delete:
+ *     summary: Remove a member from a task (Admin and Project Manager only)
+ *     tags: [Tasks]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Task ID
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: User ID to remove
+ *     responses:
+ *       200:
+ *         description: Member removed successfully
+ *       404:
+ *         description: Task or user not found
+ */
 router.delete('/:id/members/:userId', verifyToken, requireRole('Admin', 'ProjectManager'), removeTaskMember);
 
-// DELETE /api/tasks/:id — Admin and Project Manager only
+/**
+ * @swagger
+ * /api/tasks/{id}:
+ *   delete:
+ *     summary: Delete a task and all related data (Admin and Project Manager only)
+ *     tags: [Tasks]
+ *     description: Deletes the task along with all assignees, comments, attachments, and notifications.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Task deleted successfully
+ *       403:
+ *         description: Forbidden — ProjectManager trying to delete another user's task
+ *       404:
+ *         description: Task not found
+ */
 router.delete('/:id', verifyToken, requireRole('Admin', 'ProjectManager'), deleteTask);
 
 export default router;
