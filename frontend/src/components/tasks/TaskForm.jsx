@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext.jsx';
 import Layout from '../../components/layout/Layout.jsx';
 import Avatar from '../../components/common/Avatar.jsx';
 import LoadingSpinner from '../../components/common/LoadingSpinner.jsx';
@@ -10,7 +9,6 @@ import { toast } from 'react-hot-toast';
 export default function TaskForm() {
   const { id }     = useParams();
   const isEdit     = !!id;
-  const { user }   = useAuth();
   const navigate   = useNavigate();
 
   const [isDark, setIsDark] = useState(
@@ -36,21 +34,6 @@ export default function TaskForm() {
 
   // Keep a ref to original assignee IDs so we can diff on submit
   const originalIdsRef = useRef([]);
-
-  useEffect(() => {
-    fetchUsers();
-    if (isEdit) fetchTask();
-
-    // Watch <html> for theme changes (data-theme attr or class toggle)
-    const observer = new MutationObserver(() => {
-      setIsDark(
-        document.documentElement.getAttribute('data-theme') === 'dark' ||
-        document.documentElement.classList.contains('dark')
-      );
-    });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
-    return () => observer.disconnect();
-  }, []);
 
   // ── fetch only ACTIVE users (backend rejects inactive on assign) ──────────
   const fetchUsers = async () => {
@@ -80,12 +63,30 @@ export default function TaskForm() {
       const ids = (t.assignees || []).map(a => Number(a.id));
       setSelectedIds(ids);
       originalIdsRef.current = ids;
-    } catch (e) {
+    } catch {
       toast.error('Failed to load task');
     } finally {
       setFetchingTask(false);
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      await fetchUsers();
+      if (isEdit) await fetchTask();
+    })();
+
+    // Watch <html> for theme changes (data-theme attr or class toggle)
+    const observer = new MutationObserver(() => {
+      setIsDark(
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.documentElement.classList.contains('dark')
+      );
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── toggle a user's selection ─────────────────────────────────────────────
   // In CREATE mode: just track selectedIds
@@ -179,7 +180,10 @@ export default function TaskForm() {
         toast.success('Task updated successfully');
       }
 
-      navigate('/tasks');
+      // Small delay so the success toast has time to mount/render before
+      // the route change unmounts this page (otherwise the toast can be
+      // skipped entirely, especially right after a fresh login/page load).
+      setTimeout(() => navigate('/tasks'), 300);
     } catch (err) {
       toast.error(err.response?.data?.description || 'Failed to save task');
     } finally {
@@ -317,7 +321,6 @@ export default function TaskForm() {
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '14px' }}>
                 {selectedUsers.map(u => {
                   const isNew     = isEdit && pendingAdd.includes(Number(u.id));
-                  const isRemoved = isEdit && pendingRemove.includes(Number(u.id)); // won't show (removed = deselected)
                   return (
                     <div key={u.id} style={{
                       display: 'flex', alignItems: 'center', gap: '6px',
