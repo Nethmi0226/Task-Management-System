@@ -57,7 +57,7 @@ export default function TaskForm() {
     try {
       const res = await api.get('/auth/users');
       const active = (res.data.users || []).filter(
-        u => u.isActive && (u.role === 'ProjectManager' || u.role === 'Collaborator')
+        u => u.isActive && (u.role === 'Admin' || u.role === 'ProjectManager' || u.role === 'Collaborator')
       );
       setAllUsers(active);
     } catch (e) {
@@ -356,6 +356,7 @@ export default function TaskForm() {
               <select value={userRoleFilter} onChange={e => setUserRoleFilter(e.target.value)}
                 style={{ ...inputStyle, width: 'auto', minWidth: '140px', padding: '8px 12px', fontSize: '13px' }}>
                 <option value="">All Roles</option>
+                <option value="Admin">Admin</option>
                 <option value="ProjectManager">Project Manager</option>
                 <option value="Collaborator">Collaborator</option>
               </select>

@@ -387,13 +387,6 @@ export default function TaskDetailPage() {
                       </div>
                     ))}
                   </div>
-                  {/* Add member button */}
-                  {canManageMembers && (
-                    <button onClick={openMemberPanel}
-                      style={{ display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: 'var(--accent-light)', color: 'var(--accent)', border: '1px dashed var(--accent)', borderRadius: '20px', padding: '3px 10px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
-                      + Add Member
-                    </button>
-                  )}
                 </div>
               )}
 
