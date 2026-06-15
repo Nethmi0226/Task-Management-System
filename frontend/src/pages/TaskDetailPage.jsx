@@ -24,10 +24,6 @@ const formatRelative = (value) => {
   const date = safeDate(value);
   return date ? formatDistanceToNow(date, { addSuffix: true }) : '—';
 };
-const formatDisplayDate = (value) => {
-  const date = safeDate(value);
-  return date ? date.toLocaleDateString() : '—';
-};
 
 export default function TaskDetailPage() {
   const { id }   = useParams();
@@ -57,8 +53,6 @@ export default function TaskDetailPage() {
   const [addingMember,     setAddingMember]     = useState(false);
   const [removingMemberId, setRemovingMemberId] = useState(null);
 
-  useEffect(() => { fetchAll(); }, [id]);
-
   const fetchAll = async () => {
     setLoading(true);
     try {
@@ -85,6 +79,33 @@ export default function TaskDetailPage() {
       setLoading(false);
     }
   };
+
+  // Refresh task/comments/attachments WITHOUT toggling the page-level
+  // `loading` flag — used after quick actions (add/remove member, etc.)
+  // so the whole page doesn't flash a full-screen spinner.
+  const refreshTaskData = async () => {
+    try {
+      const [taskRes, commentsRes, attachmentsRes] = await Promise.all([
+        api.get(`/tasks/${id}`),
+        api.get(`/comments/${id}`),
+        api.get(`/attachments/${id}`)
+      ]);
+      setTask(taskRes.data.task || taskRes.data || null);
+      setComments(commentsRes.data.comments || commentsRes.data || []);
+      setAttachments(attachmentsRes.data.attachments || attachmentsRes.data || []);
+    } catch (e) {
+      console.error('Failed to refresh task data', e);
+    }
+  };
+
+  useEffect(() => {
+    // Call fetchAll asynchronously to avoid synchronous setState within effect
+    // which can trigger cascading renders.
+    (async () => {
+      await fetchAll();
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   // ── Permission helpers ─────────────────────────────
   const isAdmin       = user?.role === 'Admin';
@@ -134,7 +155,7 @@ export default function TaskDetailPage() {
       const endpoint = isAdmin ? '/users?status=active' : '/users/team';
       const res = await api.get(endpoint);
       setTeamUsers(res.data.users || []);
-    } catch (e) {
+    } catch {
       toast.error('Failed to load users');
     }
   };
@@ -144,11 +165,12 @@ export default function TaskDetailPage() {
     try {
       await api.post(`/tasks/${id}/members`, { userIds: [userId] });
       toast.success('Member added to task');
-      fetchAll();
-      // Refresh team list
       const endpoint = isAdmin ? '/users?status=active' : '/users/team';
-      const res = await api.get(endpoint);
-      setTeamUsers(res.data.users || []);
+      const [, teamRes] = await Promise.all([
+        refreshTaskData(),
+        api.get(endpoint)
+      ]);
+      setTeamUsers(teamRes.data.users || []);
     } catch (e) {
       toast.error(e.response?.data?.description || 'Failed to add member');
     } finally {
@@ -161,7 +183,7 @@ export default function TaskDetailPage() {
     try {
       await api.delete(`/tasks/${id}/members/${userId}`);
       toast.success('Member removed from task');
-      fetchAll();
+      await refreshTaskData();
     } catch (e) {
       toast.error(e.response?.data?.description || 'Failed to remove member');
     } finally {
@@ -201,7 +223,7 @@ export default function TaskDetailPage() {
       setEditingComment(null);
       setEditContent('');
       fetchAll();
-    } catch (e) {
+    } catch {
       toast.error('Failed to update comment');
     }
   };
@@ -212,7 +234,7 @@ export default function TaskDetailPage() {
       await api.delete(`/comments/${commentId}`);
       toast.success('Comment deleted');
       fetchAll();
-    } catch (e) {
+    } catch {
       toast.error('Failed to delete comment');
     }
   };
@@ -273,7 +295,7 @@ export default function TaskDetailPage() {
     try {
       const res = await api.get(`/attachments/download/${attachmentId}`, { responseType: 'blob' });
       downloadBlob(res.data, fileName);
-    } catch (e) {
+    } catch {
       toast.error('Download failed');
     }
   };
@@ -282,7 +304,7 @@ export default function TaskDetailPage() {
     try {
       const res = await api.get(`/comments/download/${commentId}`, { responseType: 'blob' });
       downloadBlob(res.data, fileName);
-    } catch (e) {
+    } catch {
       toast.error('Download failed');
     }
   };
@@ -561,7 +583,7 @@ export default function TaskDetailPage() {
                             {c.commentFileName && (
                               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', borderRadius: '8px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
                                 <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{getFileIcon(c.commentFileType)} {c.commentFileName}</span>
-                                <button onClick={async () => { try { await api.delete(`/comments/${c.id}/attachment`); toast.success('Attachment removed'); fetchAll(); } catch (e) { toast.error('Failed to remove attachment'); } }}
+                                <button onClick={async () => { try { await api.delete(`/comments/${c.id}/attachment`); toast.success('Attachment removed'); fetchAll(); } catch { toast.error('Failed to remove attachment'); } }}
                                   style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '11px', cursor: 'pointer', fontWeight: '500' }}>Remove attachment</button>
                               </div>
                             )}
