@@ -537,8 +537,8 @@ export default function AnalyticsPage() {
         <div className="analytics-grid-3">
           <ChartCard title="Task Status" subtitle="Current status distribution">
             <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie data={statusPie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} innerRadius={44} paddingAngle={3} label={({name,percent}) => `${name} ${(percent*100).toFixed(0)}%`} labelLine={false}>
+              <PieChart margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
+                <Pie data={statusPie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={75} innerRadius={44} paddingAngle={3} label={({name,percent}) => `${name} ${(percent*100).toFixed(0)}%`} labelLine={false}>
                   {statusPie.map((e,i) => <Cell key={i} fill={e.color} />)}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
@@ -556,8 +556,8 @@ export default function AnalyticsPage() {
 
           <ChartCard title="Task Priority" subtitle="Priority level distribution">
             <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie data={priorityPie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} innerRadius={44} paddingAngle={3} label={({name,percent}) => `${name} ${(percent*100).toFixed(0)}%`} labelLine={false}>
+              <PieChart margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
+                <Pie data={priorityPie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={75} innerRadius={44} paddingAngle={3} label={({name,percent}) => `${name} ${(percent*100).toFixed(0)}%`} labelLine={false}>
                   {priorityPie.map((e,i) => <Cell key={i} fill={e.color} />)}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
@@ -575,8 +575,8 @@ export default function AnalyticsPage() {
 
           <ChartCard title="User Roles" subtitle="Distribution of user roles">
             <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie data={rolePie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} innerRadius={44} paddingAngle={3} label={({name,percent}) => `${(percent*100).toFixed(0)}%`} labelLine={false}>
+              <PieChart margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
+                <Pie data={rolePie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={75} innerRadius={44} paddingAngle={3} label={({name,percent}) => `${(percent*100).toFixed(0)}%`} labelLine={false}>
                   {rolePie.map((e,i) => <Cell key={i} fill={e.color} />)}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
