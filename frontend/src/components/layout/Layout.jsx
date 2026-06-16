@@ -3,10 +3,19 @@ import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 
 export default function Layout({ children }) {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 769);
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 769);
 
   useEffect(() => {
-    const handler = () => setSidebarOpen(window.innerWidth >= 769);
+    const handler = () => {
+      const mobile = window.innerWidth < 769;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
+      }
+    };
     window.addEventListener('resize', handler);
     return () => window.removeEventListener('resize', handler);
   }, []);
@@ -16,8 +25,7 @@ export default function Layout({ children }) {
       <Navbar onToggleSidebar={() => setSidebarOpen(p => !p)} />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <main style={{
-        marginLeft: sidebarOpen && window.innerWidth >= 769
-          ? 'var(--sidebar-width)' : '0',
+        marginLeft: !isMobile && sidebarOpen ? 'var(--sidebar-width)' : '0',
         marginTop: 'var(--navbar-height)',
         padding: '28px',
         minHeight: 'calc(100vh - var(--navbar-height))',
