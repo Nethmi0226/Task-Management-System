@@ -130,7 +130,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 // ── Stat card ─────────────────────────────────────────
 const StatCard = ({ icon, label, value, sub, color }) => (
-  <div style={{ backgroundColor:'var(--bg-card)', borderRadius:'16px', padding:'20px 24px', border:'1px solid var(--border)', boxShadow:'var(--shadow-sm)', display:'flex', alignItems:'center', gap:'16px' }}>
+  <div style={{ backgroundColor:'var(--bg-card)', borderRadius:'16px', padding:'20px 24px', border:'1px solid var(--border)', boxShadow:'var(--shadow-sm)', display:'flex', alignItems:'center', gap:'16px', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
     <div style={{ width:'48px', height:'48px', borderRadius:'14px', backgroundColor:`${color}18`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'22px', flexShrink:0 }}>
       {icon}
     </div>
@@ -144,7 +144,7 @@ const StatCard = ({ icon, label, value, sub, color }) => (
 
 // ── Chart card wrapper ────────────────────────────────
 const ChartCard = ({ title, subtitle, children, extra }) => (
-  <div style={{ backgroundColor:'var(--bg-card)', borderRadius:'16px', padding:'20px 24px', border:'1px solid var(--border)', boxShadow:'var(--shadow-sm)' }}>
+  <div style={{ backgroundColor:'var(--bg-card)', borderRadius:'16px', padding:'20px 24px', border:'1px solid var(--border)', boxShadow:'var(--shadow-sm)', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
     <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:'18px', flexWrap:'wrap', gap:'8px' }}>
       <div>
         <h3 style={{ fontSize:'14px', fontWeight:'700', color:'var(--text-primary)', margin:'0 0 3px' }}>{title}</h3>
@@ -158,7 +158,7 @@ const ChartCard = ({ title, subtitle, children, extra }) => (
 
 // ── Section heading ───────────────────────────────────
 const SectionHead = ({ title, icon }) => (
-  <div style={{ display:'flex', alignItems:'center', gap:'10px', margin:'32px 0 16px' }}>
+  <div style={{ display:'flex', alignItems:'center', gap:'10px', margin:'32px 0 16px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
     <span style={{ fontSize:'20px' }}>{icon}</span>
     <h2 style={{ fontSize:'16px', fontWeight:'800', color:'var(--text-primary)', margin:0 }}>{title}</h2>
     <div style={{ flex:1, height:'1px', backgroundColor:'var(--border)' }} />
