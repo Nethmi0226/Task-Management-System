@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import Layout from '../components/layout/Layout.jsx';
@@ -31,6 +31,27 @@ const C = {
   slate:   '#64748b',
 };
 const PIE_COLORS = [C.indigo, C.teal, C.amber, C.pink, C.violet, C.orange, C.green, C.blue];
+
+// ── Custom pie label renderer ────────────────────────────
+// Default recharts pie labels are placed at a fixed radial offset and
+// always use a centered/left text-anchor based on quadrant, which causes
+// long left-side labels (e.g. "In Progress 41%") to extend past x=0 and
+// get clipped. This renderer anchors text away from the chart center so
+// labels grow outward into the available margin instead of off-canvas.
+const renderPieLabel = (props) => {
+  const { cx, cy, midAngle, outerRadius, percent, name, payload, withName = true } = props;
+  const RADIAN = Math.PI / 180;
+  const radius = outerRadius + 18;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  const textAnchor = x > cx ? 'start' : 'end';
+  const label = withName ? `${name} ${(percent * 100).toFixed(0)}%` : `${(percent * 100).toFixed(0)}%`;
+  return (
+    <text x={x} y={y} textAnchor={textAnchor} dominantBaseline="central" fontSize={12} fill={payload?.color || 'var(--text-secondary)'}>
+      {label}
+    </text>
+  );
+};
 
 const priorityColor = {
   High: C.red,
@@ -144,11 +165,24 @@ const SectionHead = ({ title, icon }) => (
   </div>
 );
 
+// ── Period selector ────────────────────────────────────
+const PeriodBtn = ({ value, label, period, setPeriod }) => (
+  <button onClick={() => setPeriod(value)}
+    style={{ padding:'6px 14px', borderRadius:'8px', border:'none', fontSize:'12px', fontWeight:'600', cursor:'pointer', backgroundColor: period===value ? 'var(--accent)' : 'var(--bg-primary)', color: period===value ? '#fff' : 'var(--text-muted)', transition:'all 0.15s' }}>
+    {label}
+  </button>
+);
+
 // ─────────────────────────────────────────────────────
 export default function AnalyticsPage() {
   const { user }   = useAuth();
   const navigate   = useNavigate();
   const exportRef  = useRef(null);
+
+  const [period,   setPeriod]   = useState('weekly');   // daily | weekly | monthly
+  const [loading,  setLoading]  = useState(true);
+  const [rawUsers, setRawUsers] = useState([]);
+  const [rawTasks, setRawTasks] = useState([]);
 
   // Redirect non-admins immediately
   useEffect(() => {
@@ -156,15 +190,6 @@ export default function AnalyticsPage() {
       navigate('/home');
     }
   }, [user, navigate]);
-
-  if (user && user.role !== 'Admin') {
-    return null;
-  }
-
-  const [period,   setPeriod]   = useState('weekly');   // daily | weekly | monthly
-  const [loading,  setLoading]  = useState(true);
-  const [rawUsers, setRawUsers] = useState([]);
-  const [rawTasks, setRawTasks] = useState([]);
 
   // ── Fetch ───────────────────────────────────────────
   useEffect(() => {
@@ -185,6 +210,11 @@ export default function AnalyticsPage() {
     };
     load();
   }, []);
+
+  if (user && user.role !== 'Admin') {
+    return null;
+  }
+
 
   // ── Derived data ────────────────────────────────────
   const BUCKET_COUNT = period === 'daily' ? 14 : period === 'weekly' ? 12 : 12;
@@ -249,12 +279,6 @@ export default function AnalyticsPage() {
     value: rawUsers.filter(u => u.role === r).length,
     color: PIE_COLORS[i]
   })).filter(d => d.value > 0);
-
-  // ── User active vs inactive (bar) ──────────────────
-  const userStatusBar = [
-    { name: 'Active',   value: activeUsers,   fill: C.green },
-    { name: 'Inactive', value: inactiveUsers, fill: C.red   },
-  ];
 
   // ── Tasks per creator (top 8) ───────────────────────
   const creatorMap = {};
@@ -400,14 +424,6 @@ export default function AnalyticsPage() {
     window.print();
   };
 
-  // ── Period selector ─────────────────────────────────
-  const PeriodBtn = ({ value, label }) => (
-    <button onClick={() => setPeriod(value)}
-      style={{ padding:'6px 14px', borderRadius:'8px', border:'none', fontSize:'12px', fontWeight:'600', cursor:'pointer', backgroundColor: period===value ? 'var(--accent)' : 'var(--bg-primary)', color: period===value ? '#fff' : 'var(--text-muted)', transition:'all 0.15s' }}>
-      {label}
-    </button>
-  );
-
   // ── Render ─────────────────────────────────────────
   if (loading) return <Layout><LoadingSpinner /></Layout>;
 
@@ -445,9 +461,9 @@ export default function AnalyticsPage() {
           <div style={{ display:'flex', gap:'10px', alignItems:'center', flexWrap:'wrap' }}>
             {/* Period selector */}
             <div style={{ display:'flex', gap:'4px', backgroundColor:'var(--bg-card)', padding:'4px', borderRadius:'10px', border:'1px solid var(--border)' }}>
-              <PeriodBtn value="daily"   label="Daily"   />
-              <PeriodBtn value="weekly"  label="Weekly"  />
-              <PeriodBtn value="monthly" label="Monthly" />
+              <PeriodBtn value="daily"   label="Daily"   period={period} setPeriod={setPeriod} />
+              <PeriodBtn value="weekly"  label="Weekly"  period={period} setPeriod={setPeriod} />
+              <PeriodBtn value="monthly" label="Monthly" period={period} setPeriod={setPeriod} />
             </div>
             {/* Export buttons */}
             <button onClick={exportExcel}
@@ -537,8 +553,8 @@ export default function AnalyticsPage() {
         <div className="analytics-grid-3">
           <ChartCard title="Task Status" subtitle="Current status distribution">
             <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie data={statusPie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} innerRadius={44} paddingAngle={3} label={({name,percent}) => `${name} ${(percent*100).toFixed(0)}%`} labelLine={false}>
+              <PieChart margin={{ top: 10, right: 50, bottom: 10, left: 50 }}>
+                <Pie data={statusPie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} innerRadius={44} paddingAngle={3} label={renderPieLabel} labelLine={false}>
                   {statusPie.map((e,i) => <Cell key={i} fill={e.color} />)}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
@@ -556,8 +572,8 @@ export default function AnalyticsPage() {
 
           <ChartCard title="Task Priority" subtitle="Priority level distribution">
             <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie data={priorityPie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} innerRadius={44} paddingAngle={3} label={({name,percent}) => `${name} ${(percent*100).toFixed(0)}%`} labelLine={false}>
+              <PieChart margin={{ top: 10, right: 50, bottom: 10, left: 50 }}>
+                <Pie data={priorityPie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} innerRadius={44} paddingAngle={3} label={renderPieLabel} labelLine={false}>
                   {priorityPie.map((e,i) => <Cell key={i} fill={e.color} />)}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
@@ -575,8 +591,8 @@ export default function AnalyticsPage() {
 
           <ChartCard title="User Roles" subtitle="Distribution of user roles">
             <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie data={rolePie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} innerRadius={44} paddingAngle={3} label={({name,percent}) => `${(percent*100).toFixed(0)}%`} labelLine={false}>
+              <PieChart margin={{ top: 10, right: 50, bottom: 10, left: 50 }}>
+                <Pie data={rolePie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} innerRadius={44} paddingAngle={3} label={(props) => renderPieLabel({ ...props, withName: false })} labelLine={false}>
                   {rolePie.map((e,i) => <Cell key={i} fill={e.color} />)}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
