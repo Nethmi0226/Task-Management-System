@@ -114,7 +114,7 @@ export default function ChangePasswordPage() {
 
           <button type="submit" disabled={loading || success}
             style={{ padding: '13px', backgroundColor: '#0078d4', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: loading ? 0.7 : 1 }}>
-            {loading ? <LoadingSpinner size={20} /> : 'Change Password'}
+            {loading ? <LoadingSpinner size={20} inline /> : 'Change Password'}
           </button>
         </form>
       </div>
