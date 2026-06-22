@@ -24,7 +24,7 @@ export default function ResetPasswordPage() {
     { label: 'One uppercase letter', test: v => /[A-Z]/.test(v) },
     { label: 'One lowercase letter', test: v => /[a-z]/.test(v) },
     { label: 'One number', test: v => /\d/.test(v) },
-    { label: 'One special character (@$!%*?&)', test: v => /[@$!%*?&]/.test(v) },
+    { label: 'One special character (@$!%*?&#)', test: v => /[@$!%*?&#]/.test(v) },
   ];
 
   // Verify token on page load
