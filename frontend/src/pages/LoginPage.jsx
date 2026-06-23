@@ -126,7 +126,7 @@ export default function LoginPage() {
             </svg>
           </div>
           <h1 style={{ fontSize: '26px', fontWeight: '700', color: isDark ? '#f1f5f9' : '#1a1a2e', margin: '0 0 8px' }}>Welcome back</h1>
-          <p style={{ fontSize: '15px', color: isDark ? '#94a3b8' : '#6b7280', margin: 0 }}>Sign in to your TMS workspace</p>
+          <p style={{ fontSize: '15px', color: isDark ? '#94a3b8' : '#6b7280', margin: 0 }}>Sign in to your Planora workspace</p>
         </div>
 
         {/* Error message */}
