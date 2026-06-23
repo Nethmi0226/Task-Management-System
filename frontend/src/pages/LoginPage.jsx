@@ -143,7 +143,7 @@ export default function LoginPage() {
 
           <button type="submit" disabled={loading}
             style={{ padding: '13px', backgroundColor: loading ? '#6ea8da' : '#0078d4', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background-color 0.2s' }}>
-            {loading ? <LoadingSpinner size={20} /> : (
+            {loading ? <LoadingSpinner size={20} inline /> : (
               <>Sign In <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg></>
             )}
           </button>
