@@ -59,7 +59,7 @@ export default function IntroPage({ onComplete }) {
           marginTop: '12px',
           animation: 'fadeIn 0.5s ease 1.8s both'
         }}>
-          TMS
+          Planora
         </p>
       </div>
     </div>

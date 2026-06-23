@@ -199,7 +199,7 @@ export default function LoginPage() {
         </form>
 
         <p style={{ textAlign: 'center', marginTop: '28px', fontSize: '13px', color: isDark ? '#64748b' : '#9ca3af', fontWeight: '500' }}>
-          Planora TMS
+          Planora
         </p>
       </div>
     </div>

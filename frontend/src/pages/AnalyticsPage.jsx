@@ -417,7 +417,7 @@ export default function AnalyticsPage() {
     // Completion by assignee
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(completionByAssignee.map(r=>({Assignee:r.name,'Completion Rate (%)':r.rate,'Total Tasks':r.total}))), 'Completion by Assignee');
 
-    XLSX.writeFile(wb, `TMS_Analytics_${new Date().toISOString().slice(0,10)}.xlsx`);
+    XLSX.writeFile(wb, `Planora_Analytics_${new Date().toISOString().slice(0,10)}.xlsx`);
   };
 
   const exportPDF = () => {
@@ -765,7 +765,7 @@ export default function AnalyticsPage() {
         {/* Footer */}
         <div style={{ marginTop:'40px', paddingTop:'20px', borderTop:'1px solid var(--border)', textAlign:'center' }}>
           <p style={{ fontSize:'12px', color:'var(--text-muted)' }}>
-            TMS Analytics · Admin Only · Generated {new Date().toLocaleString()} · No sensitive data (passwords) included in exports
+            Planora Analytics · Admin Only · Generated {new Date().toLocaleString()} · No sensitive data (passwords) included in exports
           </p>
         </div>
       </div>
