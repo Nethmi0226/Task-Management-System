@@ -102,12 +102,12 @@ export default function LoginPage() {
       </button>
 
       {/* Left side text */}
-      <div className="animate-left desktop-text" style={{ zIndex: 1, color: isDark ? '#fff' : '#1a1a2e', maxWidth: '500px', padding: '20px' }}>
-        <h1 style={{ fontSize: '56px', fontWeight: '800', lineHeight: '1.2', marginBottom: '24px', textShadow: isDark ? '0 4px 15px rgba(0,0,0,0.5)' : '0 4px 15px rgba(255,255,255,0.8)' }}>
+      <div className="animate-left desktop-text" style={{ zIndex: 1, color: '#fff', maxWidth: '500px', padding: '20px' }}>
+        <h1 style={{ fontSize: '56px', fontWeight: '800', lineHeight: '1.2', marginBottom: '24px', textShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>
           Welcome to Planora<br />
-          <span style={{ color: isDark ? '#60a5fa' : '#0078d4' }}>Task Management System</span><br />
+          <span style={{ color: '#60a5fa' }}>Task Management System</span><br />
         </h1>
-        <p style={{ fontSize: '20px', color: isDark ? '#cbd5e1' : '#374151', textShadow: isDark ? '0 2px 8px rgba(0,0,0,0.5)' : 'none', lineHeight: '1.6' }}>
+        <p style={{ fontSize: '20px', color: '#cbd5e1', textShadow: '0 2px 8px rgba(0,0,0,0.5)', lineHeight: '1.6' }}>
           Organize, track, and collaborate on your tasks efficiently. Sign in to continue to your Planora workspace.
         </p>
       </div>
