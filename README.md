@@ -12,7 +12,7 @@ The Task Management System (TMS) is a full-stack web application designed to hel
 * ORM: Sequelize
 * Authentication: JSON Web Tokens (JWT) & Bcrypt for password hashing
 
----
+
 
 ## Project Structure
 The repository is organized into a Monorepo structure for independent scaling of the frontend and backend.
@@ -29,14 +29,14 @@ tms-project/
     ├── src/pages/      # Individual screen views
     └── src/context/    # Global state management
 
----
+
 
 ## Security & Performance
 * Credential Protection: Sensitive data is decoupled using .env files (ignored via .gitignore).
 * Data Integrity: Implemented SSL/TLS encryption for all Azure MySQL connections.
 * Responsive UI: Built with Vite for Hot Module Replacement (HMR) and optimized build times.
 
----
+
 
 ## Getting Started
 
@@ -55,5 +55,5 @@ cd frontend
 npm install
 npm run dev
 
----
+
 
