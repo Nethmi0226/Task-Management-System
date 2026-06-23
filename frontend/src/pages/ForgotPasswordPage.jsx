@@ -21,7 +21,7 @@ function pageStyles() {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundImage: "url('/bg-image.jpg')",
+    backgroundImage: "url('/network-bg.jpg')",
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     padding: '20px',
@@ -206,10 +206,10 @@ export default function ForgotPasswordPage() {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
 
-  const [email,   setEmail]   = useState('');
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [sent,    setSent]    = useState(false);
-  const [error,   setError]   = useState('');
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -233,22 +233,22 @@ export default function ForgotPasswordPage() {
           to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
-      
+
       {/* Dark overlay for better readability on background image */}
-      <div style={{ position: 'absolute', inset: 0, backgroundColor: isDark ? 'rgba(15, 23, 42, 0.75)' : 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(4px)', zIndex: 0 }} />
-      
+      <div style={{ position: 'absolute', inset: 0, backgroundColor: isDark ? 'rgba(15, 23, 42, 0.75)' : 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(1px)', zIndex: 0 }} />
+
       <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
       <div style={cardStyles(isDark)}>
         {sent
           ? <EmailSentConfirmation isDark={isDark} />
           : <ForgotPasswordForm
-              isDark={isDark}
-              email={email}
-              onEmailChange={setEmail}
-              onSubmit={handleSubmit}
-              loading={loading}
-              error={error}
-            />
+            isDark={isDark}
+            email={email}
+            onEmailChange={setEmail}
+            onSubmit={handleSubmit}
+            loading={loading}
+            error={error}
+          />
         }
       </div>
     </div>

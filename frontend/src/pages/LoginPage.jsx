@@ -50,17 +50,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      display: 'flex', 
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
       flexDirection: 'row',
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      backgroundImage: "url('/bg-image.jpg')",
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundImage: "url('/network-bg.jpg')",
       backgroundSize: 'cover',
       backgroundPosition: 'center',
-      fontFamily: "'Inter', sans-serif", 
-      position: 'relative', 
+      fontFamily: "'Inter', sans-serif",
+      position: 'relative',
       padding: '40px',
       gap: '8%',
       flexWrap: 'wrap'
@@ -88,7 +88,7 @@ export default function LoginPage() {
       `}</style>
 
       {/* Dark overlay for better readability on background image */}
-      <div style={{ position: 'absolute', inset: 0, backgroundColor: isDark ? 'rgba(15, 23, 42, 0.75)' : 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(4px)', zIndex: 0 }} />
+      <div style={{ position: 'absolute', inset: 0, backgroundColor: isDark ? 'rgba(15, 23, 42, 0.75)' : 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(1px)', zIndex: 0 }} />
 
       {/* Animated background blobs (optional, but keep them for extra effect) */}
       <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', zIndex: 0, pointerEvents: 'none' }}>
@@ -104,11 +104,11 @@ export default function LoginPage() {
       {/* Left side text */}
       <div className="animate-left desktop-text" style={{ zIndex: 1, color: isDark ? '#fff' : '#1a1a2e', maxWidth: '500px', padding: '20px' }}>
         <h1 style={{ fontSize: '56px', fontWeight: '800', lineHeight: '1.2', marginBottom: '24px', textShadow: isDark ? '0 4px 15px rgba(0,0,0,0.5)' : '0 4px 15px rgba(255,255,255,0.8)' }}>
-          Welcome to Planora<br/>
-          <span style={{ color: isDark ? '#60a5fa' : '#0078d4' }}>Task Management System</span><br/>
+          Welcome to Planora<br />
+          <span style={{ color: isDark ? '#60a5fa' : '#0078d4' }}>Task Management System</span><br />
         </h1>
         <p style={{ fontSize: '20px', color: isDark ? '#cbd5e1' : '#374151', textShadow: isDark ? '0 2px 8px rgba(0,0,0,0.5)' : 'none', lineHeight: '1.6' }}>
-          Organize, track, and collaborate on your tasks efficiently. Sign in to continue to your workspace.
+          Organize, track, and collaborate on your tasks efficiently. Sign in to continue to your Planora workspace.
         </p>
       </div>
 
@@ -145,7 +145,7 @@ export default function LoginPage() {
             lineHeight: '1.45',
           }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0, marginTop: '1px' }}>
-              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
             <span>{error}</span>
           </div>
