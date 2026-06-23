@@ -82,7 +82,7 @@ task-management-system/
 └── README.md
 ```
 
----
+
 
 ## 🔐 Security & Performance
 
@@ -92,7 +92,7 @@ task-management-system/
 - SSL/TLS enforced on all Azure MySQL connections (DB_SSL=true)
 - Sensitive credentials stored in .env and excluded via .gitignore
 
----
+
 
 ## Getting Started
 
