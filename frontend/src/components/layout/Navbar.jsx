@@ -104,7 +104,7 @@ export default function Navbar({ onToggleSidebar }) {
             fontWeight: '800', fontSize: '17px',
             color: 'var(--text-primary)', letterSpacing: '-0.6px',
           }}>
-            TMS
+            Planora
           </span>
         </button>
       </div>
