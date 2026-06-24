@@ -79,3 +79,13 @@ input, textarea, select { font-family: inherit; }
   .page-content { margin-left: 0; padding: 16px; }
   :root { --sidebar-width: 0px; }
 }
+
+@media print {
+  nav, aside, .no-print {
+    display: none !important;
+  }
+  main, .page-content {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}

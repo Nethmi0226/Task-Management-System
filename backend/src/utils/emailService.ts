@@ -18,13 +18,13 @@ export const sendWelcomeEmail = async (
   tempPassword: string
 ): Promise<void> => {
   const mailOptions = {
-    from: `"TMS System" <${process.env.EMAIL_USER}>`,
+    from: `"Planora System" <${process.env.EMAIL_USER}>`,
     to: toEmail,
-    subject: 'Your TMS Account Has Been Created',
+    subject: 'Your Planora Account Has Been Created',
     text: `Hello ${name}, your account has been created.\nUsername: ${toEmail}\nTemporary Password: ${tempPassword}\nPlease log in and change your password immediately.`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 500px;">
-        <h2>Welcome to the Task Management System</h2>
+        <h2>Welcome to the Planora System</h2>
         <p>Hello <strong>${name}</strong>,</p>
         <p>Your account has been created by an Administrator.</p>
         <p>Please use the credentials below to log in:</p>
@@ -52,9 +52,9 @@ export const sendAccountUpdateEmail = async (
     .join('');
 
   const mailOptions = {
-    from: `"TMS System" <${process.env.EMAIL_USER}>`,
+    from: `"Planora System" <${process.env.EMAIL_USER}>`,
     to: toEmail,
-    subject: 'Your TMS Account Has Been Updated',
+    subject: 'Your Planora Account Has Been Updated',
     text: `Hello ${name}, your account details have been updated by an Administrator.`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 500px;">
@@ -77,15 +77,15 @@ export const sendAccountDeletedEmail = async (
   name: string
 ): Promise<void> => {
   const mailOptions = {
-    from: `"TMS System" <${process.env.EMAIL_USER}>`,
+    from: `"Planora System" <${process.env.EMAIL_USER}>`,
     to: toEmail,
-    subject: 'Your TMS Account Has Been Removed',
+    subject: 'Your Planora Account Has Been Removed',
     text: `Hello ${name}, your account has been permanently removed by an Administrator.`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 500px;">
         <h2>Your Account Has Been Removed</h2>
         <p>Hello <strong>${name}</strong>,</p>
-        <p>Your Task Management System account has been <strong style="color:red;">permanently removed</strong> by an Administrator.</p>
+        <p>Your Planora System account has been <strong style="color:red;">permanently removed</strong> by an Administrator.</p>
         <p>If you believe this was a mistake, please contact your system administrator.</p>
       </div>
     `
@@ -101,7 +101,7 @@ export const sendTaskAssignmentEmail = async (
   assignedBy: string
 ): Promise<void> => {
   const mailOptions = {
-    from: `"TMS System" <${process.env.EMAIL_USER}>`,
+    from: `"Planora System" <${process.env.EMAIL_USER}>`,
     to: toEmail,
     subject: `New Task Assigned: ${task.title}`,
     text: `Hello ${userName}, a new task has been assigned to you.`,
@@ -131,7 +131,7 @@ export const sendDeadlineReminderEmail = async (
   task: { title: string; priority: string; dueDate: string; status: string }
 ): Promise<void> => {
   const mailOptions = {
-    from: `"TMS System" <${process.env.EMAIL_USER}>`,
+    from: `"Planora System" <${process.env.EMAIL_USER}>`,
     to: toEmail,
     subject: `Reminder: Task "${task.title}" is due in 3 days`,
     text: `Hello ${userName}, your task is due in 3 days.`,
@@ -160,7 +160,7 @@ export const sendUrgentReminderEmail = async (
   task: { title: string; priority: string; dueDate: string; status: string }
 ): Promise<void> => {
   const mailOptions = {
-    from: `"TMS System" <${process.env.EMAIL_USER}>`,
+    from: `"Planora System" <${process.env.EMAIL_USER}>`,
     to: toEmail,
     subject: `Urgent: Task "${task.title}" is due TOMORROW`,
     text: `Hello ${userName}, your task is due tomorrow.`,
@@ -189,7 +189,7 @@ export const sendFinalWarningEmail = async (
   task: { title: string; priority: string; dueDate: string; status: string }
 ): Promise<void> => {
   const mailOptions = {
-    from: `"TMS System" <${process.env.EMAIL_USER}>`,
+    from: `"Planora System" <${process.env.EMAIL_USER}>`,
     to: toEmail,
     subject: `Final Warning: Task "${task.title}" is due TODAY`,
     text: `Hello ${userName}, your task is due today.`,
@@ -217,15 +217,15 @@ export const sendPasswordChangedEmail = async (
   name: string
 ): Promise<void> => {
   const mailOptions = {
-    from: `"TMS System" <${process.env.EMAIL_USER}>`,
+    from: `"Planora System" <${process.env.EMAIL_USER}>`,
     to: toEmail,
-    subject: 'Your TMS Password Has Been Changed',
+    subject: 'Your Planora Password Has Been Changed',
     text: `Hello ${name}, your password was recently changed.`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 500px;">
         <h2>Password Changed Successfully</h2>
         <p>Hello <strong>${name}</strong>,</p>
-        <p>Your Task Management System password was successfully changed.</p>
+        <p>Your Planora System password was successfully changed.</p>
         <div style="background:#fff3cd; padding:16px; border-radius:8px; margin:16px 0;">
           <p><strong>Time of change:</strong> ${new Date().toLocaleString()}</p>
         </div>
@@ -244,15 +244,15 @@ export const sendPasswordResetLinkEmail = async (
   resetLink: string
 ): Promise<void> => {
   const mailOptions = {
-    from: `"TMS System" <${process.env.EMAIL_USER}>`,
+    from: `"Planora System" <${process.env.EMAIL_USER}>`,
     to: toEmail,
-    subject: 'Reset Your TMS Password',
+    subject: 'Reset Your Planora Password',
     text: `Hello ${name}, click this link to reset your password: ${resetLink}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 500px;">
         <h2>Password Reset Request</h2>
         <p>Hello <strong>${name}</strong>,</p>
-        <p>We received a request to reset your Task Management System password.</p>
+        <p>We received a request to reset your Planora System password.</p>
         <p>Click the button below to reset your password.
         This link will expire in <strong>15 minutes</strong>.</p>
         <div style="text-align:center; margin:24px 0;">
@@ -285,15 +285,15 @@ export const sendPasswordResetSuccessEmail = async (
   name: string
 ): Promise<void> => {
   const mailOptions = {
-    from: `"TMS System" <${process.env.EMAIL_USER}>`,
+    from: `"Planora System" <${process.env.EMAIL_USER}>`,
     to: toEmail,
-    subject: 'Your TMS Password Has Been Reset Successfully',
+    subject: 'Your Planora Password Has Been Reset Successfully',
     text: `Hello ${name}, your password has been reset successfully.`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 500px;">
         <h2>Password Reset Successful</h2>
         <p>Hello <strong>${name}</strong>,</p>
-        <p>Your Task Management System password has been
+        <p>Your Planora System password has been
         <strong>successfully reset</strong>.</p>
         <div style="background:#d4edda; padding:16px; border-radius:8px; margin:16px 0;">
           <p><strong>Time of reset:</strong> ${new Date().toLocaleString()}</p>
@@ -315,14 +315,14 @@ export const sendDeactivationEmail = async (
   name: string
 ): Promise<void> => {
   const mailOptions = {
-    from: `"TMS System" <${process.env.EMAIL_USER}>`,
+    from: `"Planora System" <${process.env.EMAIL_USER}>`,
     to: toEmail,
-    subject: 'Your TMS Account Has Been Deactivated',
+    subject: 'Your Planora Account Has Been Deactivated',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 500px;">
         <h2 style="color:#e65c00;">Account Deactivated</h2>
         <p>Hello <strong>${name}</strong>,</p>
-        <p>Your Task Management System account has been <strong style="color:#e65c00;">deactivated</strong> by an Administrator.</p>
+        <p>Your Planora System account has been <strong style="color:#e65c00;">deactivated</strong> by an Administrator.</p>
         <p>You will no longer be able to log in to the system.</p>
         <p>If you believe this was a mistake, please contact your Administrator immediately.</p>
       </div>

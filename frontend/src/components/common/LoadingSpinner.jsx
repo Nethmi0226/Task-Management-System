@@ -1,4 +1,4 @@
-export default function LoadingSpinner({ size = 40, fullScreen = false }) {
+export default function LoadingSpinner({ size = 40, fullScreen = false, inline = false }) {
   const spinner = (
     <div style={{
       width: size,
@@ -30,6 +30,10 @@ export default function LoadingSpinner({ size = 40, fullScreen = false }) {
         {spinner}
       </div>
     );
+  }
+
+  if (inline) {
+    return spinner;
   }
 
   return (
