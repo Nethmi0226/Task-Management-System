@@ -68,13 +68,18 @@ export default function Sidebar({ isOpen, onClose }) {
   return (
     <>
       {/* Mobile overlay */}
+      <style>{`
+        @media (min-width: 769px) {
+          .sidebar-overlay { display: none !important; }
+        }
+      `}</style>
       {isOpen && (
         <div
+          className="sidebar-overlay"
           onClick={onClose}
           style={{
             position: 'fixed', inset: 0,
             backgroundColor: 'rgba(0,0,0,0.45)',
-            backdropFilter: 'blur(2px)',
             zIndex: 98,
           }}
         />
