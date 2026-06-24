@@ -15,27 +15,34 @@ function themed(isDark, light, dark) {
 
 // ─── Shared Styles ────────────────────────────────────────────────────────────
 
-function pageStyles(isDark) {
+function pageStyles() {
   return {
     minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: themed(isDark, '#f0f2f5', '#0f172a'),
+    backgroundImage: "url('/network-bg.jpg')",
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
     padding: '20px',
     fontFamily: "'Inter', sans-serif",
+    position: 'relative'
   };
 }
 
 function cardStyles(isDark) {
   return {
-    backgroundColor: themed(isDark, '#fff', '#1e293b'),
-    borderRadius: '20px',
-    padding: '40px',
+    backgroundColor: themed(isDark, 'rgba(255, 255, 255, 0.9)', 'rgba(30, 41, 59, 0.85)'),
+    backdropFilter: 'blur(16px)',
+    borderRadius: '24px',
+    padding: '48px 40px',
     width: '100%',
-    maxWidth: '400px',
-    boxShadow: themed(isDark, '0 8px 40px rgba(0,0,0,0.1)', '0 8px 40px rgba(0,0,0,0.5)'),
-    border: `1px solid ${themed(isDark, '#f1f5f9', '#334155')}`,
+    maxWidth: '440px',
+    boxShadow: themed(isDark, '0 20px 50px rgba(0,0,0,0.15)', '0 20px 50px rgba(0,0,0,0.5)'),
+    border: `1px solid ${themed(isDark, 'rgba(255,255,255,0.5)', 'rgba(255,255,255,0.1)')}`,
+    zIndex: 1,
+    position: 'relative',
+    animation: 'fadeInUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards'
   };
 }
 
@@ -199,10 +206,10 @@ export default function ForgotPasswordPage() {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
 
-  const [email,   setEmail]   = useState('');
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [sent,    setSent]    = useState(false);
-  const [error,   setError]   = useState('');
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -220,18 +227,28 @@ export default function ForgotPasswordPage() {
 
   return (
     <div style={pageStyles(isDark)}>
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+
+      {/* Dark overlay for better readability on background image */}
+      <div style={{ position: 'absolute', inset: 0, backgroundColor: isDark ? 'rgba(15, 23, 42, 0.75)' : 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(1px)', zIndex: 0 }} />
+
       <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
       <div style={cardStyles(isDark)}>
         {sent
           ? <EmailSentConfirmation isDark={isDark} />
           : <ForgotPasswordForm
-              isDark={isDark}
-              email={email}
-              onEmailChange={setEmail}
-              onSubmit={handleSubmit}
-              loading={loading}
-              error={error}
-            />
+            isDark={isDark}
+            email={email}
+            onEmailChange={setEmail}
+            onSubmit={handleSubmit}
+            loading={loading}
+            error={error}
+          />
         }
       </div>
     </div>
