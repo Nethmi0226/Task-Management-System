@@ -102,12 +102,12 @@ export default function LoginPage() {
       </button>
 
       {/* Left side text */}
-      <div className="animate-left desktop-text" style={{ zIndex: 1, color: isDark ? '#fff' : '#1a1a2e', maxWidth: '500px', padding: '20px' }}>
-        <h1 style={{ fontSize: '56px', fontWeight: '800', lineHeight: '1.2', marginBottom: '24px', textShadow: isDark ? '0 4px 15px rgba(0,0,0,0.5)' : '0 4px 15px rgba(255,255,255,0.8)' }}>
+      <div className="animate-left desktop-text" style={{ zIndex: 1, color: '#fff', maxWidth: '500px', padding: '20px' }}>
+        <h1 style={{ fontSize: '56px', fontWeight: '800', lineHeight: '1.2', marginBottom: '24px', textShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>
           Welcome to Planora<br />
-          <span style={{ color: isDark ? '#60a5fa' : '#0078d4' }}>Task Management System</span><br />
+          <span style={{ color: '#60a5fa' }}>Task Management System</span><br />
         </h1>
-        <p style={{ fontSize: '20px', color: isDark ? '#cbd5e1' : '#374151', textShadow: isDark ? '0 2px 8px rgba(0,0,0,0.5)' : 'none', lineHeight: '1.6' }}>
+        <p style={{ fontSize: '20px', color: '#cbd5e1', textShadow: '0 2px 8px rgba(0,0,0,0.5)', lineHeight: '1.6' }}>
           Organize, track, and collaborate on your tasks efficiently. Sign in to continue to your Planora workspace.
         </p>
       </div>
@@ -126,7 +126,7 @@ export default function LoginPage() {
             </svg>
           </div>
           <h1 style={{ fontSize: '26px', fontWeight: '700', color: isDark ? '#f1f5f9' : '#1a1a2e', margin: '0 0 8px' }}>Welcome back</h1>
-          <p style={{ fontSize: '15px', color: isDark ? '#94a3b8' : '#6b7280', margin: 0 }}>Sign in to your TMS workspace</p>
+          <p style={{ fontSize: '15px', color: isDark ? '#94a3b8' : '#6b7280', margin: 0 }}>Sign in to your Planora workspace</p>
         </div>
 
         {/* Error message */}
@@ -199,7 +199,7 @@ export default function LoginPage() {
         </form>
 
         <p style={{ textAlign: 'center', marginTop: '28px', fontSize: '13px', color: isDark ? '#64748b' : '#9ca3af', fontWeight: '500' }}>
-          Planora TMS
+          Planora
         </p>
       </div>
     </div>
