@@ -56,7 +56,7 @@ export default function LoginPage() {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundImage: "url('/network-bg.jpg')",
+      backgroundImage: isDark ? "url('/network-bg.jpg')" : "url('/network-bg-light.png')",
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       fontFamily: "'Inter', sans-serif",
@@ -88,7 +88,7 @@ export default function LoginPage() {
       `}</style>
 
       {/* Dark overlay for better readability on background image */}
-      <div style={{ position: 'absolute', inset: 0, backgroundColor: isDark ? 'rgba(15, 23, 42, 0.75)' : 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(1px)', zIndex: 0 }} />
+      <div style={{ position: 'absolute', inset: 0, backgroundColor: isDark ? 'rgba(15, 23, 42, 0.75)' : 'rgba(255, 255, 255, 0.3)', backdropFilter: 'blur(1px)', zIndex: 0 }} />
 
       {/* Animated background blobs (optional, but keep them for extra effect) */}
       <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', zIndex: 0, pointerEvents: 'none' }}>
@@ -102,12 +102,13 @@ export default function LoginPage() {
       </button>
 
       {/* Left side text */}
-      <div className="animate-left desktop-text" style={{ zIndex: 1, color: '#fff', maxWidth: '500px', padding: '20px' }}>
-        <h1 style={{ fontSize: '56px', fontWeight: '800', lineHeight: '1.2', marginBottom: '24px', textShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>
+      <div className="animate-left desktop-text" style={{ zIndex: 1, color: isDark ? '#fff' : '#1e293b', maxWidth: '500px', padding: '20px' }}>
+        <h1 style={{ fontSize: '56px', fontWeight: '800', lineHeight: '1.2', marginBottom: '24px', textShadow: isDark ? '0 4px 15px rgba(0,0,0,0.5)' : 'none' }}>
           Welcome to Planora<br />
-          <span style={{ color: '#60a5fa' }}>Task Management System</span><br />
         </h1>
-        <p style={{ fontSize: '20px', color: '#cbd5e1', textShadow: '0 2px 8px rgba(0,0,0,0.5)', lineHeight: '1.6' }}>
+        <h2><span style={{ color: isDark ? '#60a5fa' : '#2563eb' }}>Task Management System</span><br />
+        </h2>
+        <p style={{ fontSize: '20px', color: isDark ? '#cbd5e1' : '#475569', textShadow: isDark ? '0 2px 8px rgba(0,0,0,0.5)' : 'none', lineHeight: '1.6' }}>
           Organize, track, and collaborate on your tasks efficiently. Sign in to continue to your Planora workspace.
         </p>
       </div>
