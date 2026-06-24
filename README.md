@@ -18,14 +18,14 @@ The Task Management System (TMS) is a full-stack web application designed to hel
 
 ## 🚀 Features
 
-Create, read, update, and delete tasks
-File attachment support via uploads
-Environment-based configuration (.env)
-Fast frontend powered by Vite + React
-RESTful API backend with Express
-Modular component-based UI architecture
-Context API for global state management
-Custom React hooks for reusable logic
+- Create, read, update, and delete tasks
+- File attachment support via uploads
+- Environment-based configuration (.env)
+- Fast frontend powered by Vite + React
+- RESTful API backend with Express
+- Modular component-based UI architecture
+- Context API for global state management
+- Custom React hooks for reusable logic
 
 ## 🗂️ Project Structure
 
@@ -104,20 +104,20 @@ task-management-system/
 
 ### 2. Clone the Repository
 
-git clone https://github.com/your-username/task-management-sys.git
-cd task-management-sys
+- git clone https://github.com/your-username/task-management-sys.git
+- cd task-management-sys
 
 ### 3. Backend Setup
 
-cd backend
-npm install
-npm start
-(A .env file is required in the backend folder with Azure DB credentials)
+- cd backend
+- npm install
+- npm start
+- (A .env file is required in the backend folder with Azure DB credentials)
 
 ### 4. Frontend Setup
 
-cd frontend
-npm install
+- cd frontend
+- npm install
 npm run dev
 
 Note on ports: Both the frontend and backend ports are configurable via .env files.
@@ -156,8 +156,8 @@ The system implements three user roles with different levels of access.
 
 ## 🤝 Contributing
 
-1.Fork the repository
-2.Create a branch: git checkout -b feature/your-feature
-3.Commit your changes: git commit -m "feat: add your feature"
-4.Push: git push origin feature/your-feature
-5.Open a Pull Request
+1. Fork the repository
+2. Create a branch: git checkout -b feature/your-feature
+3. Commit your changes: git commit -m "feat: add your feature"
+4. Push: git push origin feature/your-feature
+5. Open a Pull Request
