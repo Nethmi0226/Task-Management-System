@@ -434,7 +434,9 @@ export default function AnalyticsPage() {
           .no-print { display: none !important; }
           .page-content { margin: 0 !important; padding: 0 !important; }
           body { background: white !important; }
+          .print-only { display: block !important; }
         }
+        .print-only { display: none; }
         .analytics-grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
         .analytics-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
         .analytics-grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
@@ -449,6 +451,11 @@ export default function AnalyticsPage() {
       `}</style>
 
       <div ref={exportRef} style={{ maxWidth:'1200px', margin:'0 auto' }}>
+
+        {/* ── Print-only header ── */}
+        <h1 className="print-only" style={{ textAlign:'center', marginBottom:'32px', fontSize:'32px', color:'var(--text-primary)', borderBottom:'2px solid var(--border)', paddingBottom:'16px' }}>
+          Summary of Planora
+        </h1>
 
         {/* ── Page header ── */}
         <div className="no-print" style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:'24px', flexWrap:'wrap', gap:'16px' }}>
@@ -743,23 +750,25 @@ export default function AnalyticsPage() {
         )}
 
         {/* ── Recent users ── */}
-        <SectionHead title="Recently Registered Users" icon="🆕" />
-        <div className="analytics-grid-2">
-          {recentUsers.map(u => (
-            <div key={u.id} style={{ backgroundColor:'var(--bg-card)', borderRadius:'12px', padding:'14px 18px', border:'1px solid var(--border)', display:'flex', alignItems:'center', gap:'12px' }}>
-              <div style={{ width:'40px', height:'40px', borderRadius:'50%', backgroundColor:PIE_COLORS[u.id % PIE_COLORS.length], display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px', fontWeight:'800', color:'#fff', flexShrink:0, textTransform:'uppercase' }}>
-                {u.name?.charAt(0) || '?'}
+        <div className="no-print">
+          <SectionHead title="Recently Registered Users" icon="🆕" />
+          <div className="analytics-grid-2">
+            {recentUsers.map(u => (
+              <div key={u.id} style={{ backgroundColor:'var(--bg-card)', borderRadius:'12px', padding:'14px 18px', border:'1px solid var(--border)', display:'flex', alignItems:'center', gap:'12px' }}>
+                <div style={{ width:'40px', height:'40px', borderRadius:'50%', backgroundColor:PIE_COLORS[u.id % PIE_COLORS.length], display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px', fontWeight:'800', color:'#fff', flexShrink:0, textTransform:'uppercase' }}>
+                  {u.name?.charAt(0) || '?'}
+                </div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <p style={{ fontSize:'13px', fontWeight:'600', color:'var(--text-primary)', margin:0, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{u.name}</p>
+                  <p style={{ fontSize:'11px', color:'var(--text-muted)', margin:'2px 0 0', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{u.email}</p>
+                </div>
+                <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'3px', flexShrink:0 }}>
+                  <span style={{ fontSize:'10px', fontWeight:'700', padding:'2px 7px', borderRadius:'20px', backgroundColor:`${PIE_COLORS[0]}15`, color:PIE_COLORS[0] }}>{u.role === 'ProjectManager' ? 'PM' : u.role}</span>
+                  <span style={{ fontSize:'10px', color: u.isActive ? C.green : C.red, fontWeight:'600' }}>{u.isActive ? 'Active' : 'Inactive'}</span>
+                </div>
               </div>
-              <div style={{ flex:1, minWidth:0 }}>
-                <p style={{ fontSize:'13px', fontWeight:'600', color:'var(--text-primary)', margin:0, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{u.name}</p>
-                <p style={{ fontSize:'11px', color:'var(--text-muted)', margin:'2px 0 0', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{u.email}</p>
-              </div>
-              <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'3px', flexShrink:0 }}>
-                <span style={{ fontSize:'10px', fontWeight:'700', padding:'2px 7px', borderRadius:'20px', backgroundColor:`${PIE_COLORS[0]}15`, color:PIE_COLORS[0] }}>{u.role === 'ProjectManager' ? 'PM' : u.role}</span>
-                <span style={{ fontSize:'10px', color: u.isActive ? C.green : C.red, fontWeight:'600' }}>{u.isActive ? 'Active' : 'Inactive'}</span>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* Footer */}
