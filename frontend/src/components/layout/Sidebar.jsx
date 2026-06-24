@@ -1,4 +1,5 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -10,7 +11,6 @@ const navItems = [
   { to: '/team', icon: '👷', label: 'My Team', roles: ['ProjectManager'] },
 ];
 
-// Role → accent color
 const roleColor = {
   Admin: '#6366f1',
   ProjectManager: '#3b9eed',
@@ -32,7 +32,6 @@ export default function Sidebar({ isOpen, onClose }) {
   const filtered = navItems.filter(item => item.roles.includes(user?.role));
   const accent = roleColor[user?.role] || '#6366f1';
 
-  // Theme tokens computed locally so every value is explicit
   const t = isDark ? {
     sidebar: '#13152a',           // deep navy
     border: 'rgba(255,255,255,0.07)',
@@ -67,8 +66,8 @@ export default function Sidebar({ isOpen, onClose }) {
 
   return (
     <>
-      {/* Mobile overlay */}
-      {isOpen && (
+      {/* Overlay — only on mobile when open */}
+      {isOpen && isMobile && (
         <div
           onClick={onClose}
           style={{
@@ -96,16 +95,10 @@ export default function Sidebar({ isOpen, onClose }) {
         overflowX: 'hidden',
       }}>
 
-        {/* ── Nav section ── */}
         <nav style={{ flex: 1, padding: '20px 12px 12px' }}>
-          {/* Section label */}
           <p style={{
-            fontSize: '10px',
-            fontWeight: '700',
-            letterSpacing: '1.2px',
-            color: t.navLabel,
-            padding: '0 10px',
-            marginBottom: '8px',
+            fontSize: '10px', fontWeight: '700', letterSpacing: '1.2px',
+            color: t.navLabel, padding: '0 10px', marginBottom: '8px',
             textTransform: 'uppercase',
           }}>
             Menu
@@ -115,25 +108,19 @@ export default function Sidebar({ isOpen, onClose }) {
             <NavLink
               key={item.to}
               to={item.to}
-              onClick={onClose}
+              onClick={isMobile ? onClose : undefined}
               style={({ isActive }) => ({
-                display: 'flex',
-                alignItems: 'center',
-                gap: '11px',
-                padding: '10px 12px',
-                borderRadius: '10px',
-                marginBottom: '3px',
-                fontSize: '13px',
-                fontWeight: isActive ? '600' : '500',
+                display: 'flex', alignItems: 'center', gap: '11px',
+                padding: '10px 12px', borderRadius: '10px', marginBottom: '3px',
+                fontSize: '13px', fontWeight: isActive ? '600' : '500',
                 textDecoration: 'none',
                 color: isActive ? t.navActive : t.navDefault,
                 backgroundColor: isActive ? t.navActiveBg : 'transparent',
                 borderLeft: isActive ? `3px solid ${t.navActiveBorder}` : '3px solid transparent',
                 transition: 'all 0.15s ease',
-                position: 'relative',
               })}
               onMouseEnter={e => {
-                const isActive = e.currentTarget.style.borderLeftColor !== 'transparent';
+                const isActive = e.currentTarget.getAttribute('aria-current') === 'page';
                 if (!isActive) e.currentTarget.style.backgroundColor = t.navHoverBg;
               }}
               onMouseLeave={e => {
@@ -149,73 +136,41 @@ export default function Sidebar({ isOpen, onClose }) {
           ))}
         </nav>
 
-        {/* ── Divider ── */}
         <div style={{ height: '1px', backgroundColor: t.divider, margin: '0 16px' }} />
 
-        {/* ── Bottom user card ── */}
         <div style={{ padding: '12px' }}>
           <div style={{
-            backgroundColor: t.userCard,
-            border: `1px solid ${t.userCardBorder}`,
-            borderRadius: '12px',
-            padding: '12px 14px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '11px',
+            backgroundColor: t.userCard, border: `1px solid ${t.userCardBorder}`,
+            borderRadius: '12px', padding: '12px 14px',
+            display: 'flex', alignItems: 'center', gap: '11px',
           }}>
-            {/* Avatar circle */}
             <div style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '50%',
-              backgroundColor: accent,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '13px',
-              fontWeight: '800',
-              color: '#fff',
-              flexShrink: 0,
-              textTransform: 'uppercase',
+              width: '36px', height: '36px', borderRadius: '50%',
+              backgroundColor: accent, display: 'flex', alignItems: 'center',
+              justifyContent: 'center', fontSize: '13px', fontWeight: '800',
+              color: '#fff', flexShrink: 0, textTransform: 'uppercase',
               boxShadow: `0 0 0 3px ${accent}28`,
             }}>
               {user?.name?.charAt(0) || '?'}
             </div>
-
-            {/* Name + role */}
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{
-                fontSize: '12px',
-                fontWeight: '700',
-                color: t.userName,
-                margin: 0,
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
+                fontSize: '12px', fontWeight: '700', color: t.userName,
+                margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
               }}>
                 {user?.name}
               </p>
               <span style={{
-                display: 'inline-block',
-                fontSize: '10px',
-                fontWeight: '600',
-                color: accent,
-                backgroundColor: `${accent}18`,
-                padding: '1px 7px',
-                borderRadius: '20px',
-                marginTop: '3px',
+                display: 'inline-block', fontSize: '10px', fontWeight: '600',
+                color: accent, backgroundColor: `${accent}18`,
+                padding: '1px 7px', borderRadius: '20px', marginTop: '3px',
               }}>
                 {roleLabel[user?.role] || user?.role}
               </span>
             </div>
-
-            {/* Online dot */}
             <div style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: '#10b981',
-              flexShrink: 0,
+              width: '8px', height: '8px', borderRadius: '50%',
+              backgroundColor: '#10b981', flexShrink: 0,
               boxShadow: '0 0 0 2px rgba(16,185,129,0.25)',
             }} />
           </div>

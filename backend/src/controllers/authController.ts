@@ -209,7 +209,7 @@ export const changePassword = async (req: AuthenticatedRequest, res: Response): 
   try {
     const { newPassword } = req.body;
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
 
     if (!newPassword) {
       res.status(400).json({ errorCode: 400, message: 'Bad Request', description: 'New password is required' });
@@ -338,7 +338,7 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
     if (!passwordRegex.test(newPassword)) {
       res.status(400).json({ errorCode: 400, message: 'Bad Request', description: 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character (@$!%*?&)' });
       return;

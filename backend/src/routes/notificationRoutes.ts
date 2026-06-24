@@ -10,20 +10,82 @@ import { verifyToken } from '../middleware/authMiddleware';
 
 const router = Router();
 
-// GET /api/notifications — get all notifications for logged-in user
+/**
+ * @swagger
+ * /api/notifications:
+ *   get:
+ *     summary: Get all notifications for the logged-in user
+ *     tags: [Notifications]
+ *     responses:
+ *       200:
+ *         description: List of notification objects ordered by most recent
+ */
 router.get('/', verifyToken, getNotifications);
 
-// GET /api/notifications/unread-count — get count of unread notifications
+/**
+ * @swagger
+ * /api/notifications/unread-count:
+ *   get:
+ *     summary: Get count of unread notifications for the logged-in user
+ *     tags: [Notifications]
+ *     responses:
+ *       200:
+ *         description: "{ count: number }"
+ */
 router.get('/unread-count', verifyToken, getUnreadCount);
 
-// PATCH /api/notifications/read-all — mark all as read
-// Must be BEFORE /:id/read to avoid Express reading "read-all" as an ID
+/**
+ * @swagger
+ * /api/notifications/read-all:
+ *   patch:
+ *     summary: Mark all notifications as read
+ *     tags: [Notifications]
+ *     responses:
+ *       200:
+ *         description: All notifications marked as read
+ */
 router.patch('/read-all', verifyToken, markAllAsRead);
 
-// PATCH /api/notifications/:id/read — mark one notification as read
+/**
+ * @swagger
+ * /api/notifications/{id}/read:
+ *   patch:
+ *     summary: Mark a single notification as read
+ *     tags: [Notifications]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Notification ID
+ *     responses:
+ *       200:
+ *         description: Notification marked as read
+ *       404:
+ *         description: Notification not found
+ */
 router.patch('/:id/read', verifyToken, markAsRead);
 
-// DELETE /api/notifications/:id — delete one notification
+/**
+ * @swagger
+ * /api/notifications/{id}:
+ *   delete:
+ *     summary: Delete a single notification
+ *     tags: [Notifications]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Notification ID
+ *     responses:
+ *       200:
+ *         description: Notification deleted successfully
+ *       404:
+ *         description: Notification not found
+ */
 router.delete('/:id', verifyToken, deleteNotification);
 
 export default router;
