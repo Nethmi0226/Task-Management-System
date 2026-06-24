@@ -4,64 +4,66 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
 const navItems = [
-  { to: '/home', icon: '🏠', label: 'Dashboard', roles: ['Admin', 'ProjectManager', 'Collaborator'] },
-  { to: '/tasks', icon: '📋', label: 'Tasks', roles: ['Admin', 'ProjectManager', 'Collaborator'] },
-  { to: '/users', icon: '👥', label: 'Users', roles: ['Admin'] },
+  { to: '/home',  icon: '🏠', label: 'Dashboard', roles: ['Admin', 'ProjectManager', 'Collaborator'] },
+  { to: '/tasks', icon: '📋', label: 'Tasks',     roles: ['Admin', 'ProjectManager', 'Collaborator'] },
+  { to: '/users', icon: '👥', label: 'Users',     roles: ['Admin'] },
   { to: '/analytics', icon: '📊', label: 'Analytics', roles: ['Admin'] },
-  { to: '/team', icon: '👷', label: 'My Team', roles: ['ProjectManager'] },
+  { to: '/team',  icon: '👷', label: 'My Team',   roles: ['ProjectManager'] },
 ];
 
 const roleColor = {
-  Admin: '#6366f1',
+  Admin:          '#6366f1',
   ProjectManager: '#3b9eed',
-  Collaborator: '#10b981',
+  Collaborator:   '#10b981',
 };
 
 const roleLabel = {
-  Admin: 'Admin',
+  Admin:          'Admin',
   ProjectManager: 'Project Manager',
-  Collaborator: 'Collaborator',
+  Collaborator:   'Collaborator',
 };
 
 export default function Sidebar({ isOpen, onClose }) {
-  const { user, logout } = useAuth();
-  const { theme } = useTheme();          // 'dark' | 'light'
-  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { theme } = useTheme();
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 769);
 
-  const isDark = theme === 'dark';
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 769);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+
+  const isDark   = theme === 'dark';
   const filtered = navItems.filter(item => item.roles.includes(user?.role));
-  const accent = roleColor[user?.role] || '#6366f1';
+  const accent   = roleColor[user?.role] || '#6366f1';
 
   const t = isDark ? {
-    sidebar: '#13152a',           // deep navy
-    border: 'rgba(255,255,255,0.07)',
-    navLabel: 'rgba(255,255,255,0.28)',
-    navDefault: 'rgba(255,255,255,0.55)',
-    navActive: '#ffffff',
-    navActiveBg: `${accent}28`,
-    navHoverBg: 'rgba(255,255,255,0.06)',
+    sidebar:        '#13152a',
+    border:         'rgba(255,255,255,0.07)',
+    navLabel:       'rgba(255,255,255,0.28)',
+    navDefault:     'rgba(255,255,255,0.55)',
+    navActive:      '#ffffff',
+    navActiveBg:    `${accent}28`,
+    navHoverBg:     'rgba(255,255,255,0.06)',
     navActiveBorder: accent,
-    userCard: 'rgba(255,255,255,0.05)',
+    userCard:       'rgba(255,255,255,0.05)',
     userCardBorder: 'rgba(255,255,255,0.08)',
-    userName: 'rgba(255,255,255,0.9)',
-    userRole: 'rgba(255,255,255,0.42)',
-    divider: 'rgba(255,255,255,0.07)',
-    logoText: '#ffffff',
+    userName:       'rgba(255,255,255,0.9)',
+    divider:        'rgba(255,255,255,0.07)',
   } : {
-    sidebar: '#ffffff',
-    border: 'rgba(0,0,0,0.07)',
-    navLabel: 'rgba(0,0,0,0.35)',
-    navDefault: '#4b5563',
-    navActive: accent,
-    navActiveBg: `${accent}14`,
-    navHoverBg: 'rgba(0,0,0,0.04)',
+    sidebar:        '#ffffff',
+    border:         'rgba(0,0,0,0.07)',
+    navLabel:       'rgba(0,0,0,0.35)',
+    navDefault:     '#4b5563',
+    navActive:      accent,
+    navActiveBg:    `${accent}14`,
+    navHoverBg:     'rgba(0,0,0,0.04)',
     navActiveBorder: accent,
-    userCard: '#f8fafc',
+    userCard:       '#f8fafc',
     userCardBorder: 'rgba(0,0,0,0.08)',
-    userName: '#111827',
-    userRole: '#6b7280',
-    divider: 'rgba(0,0,0,0.07)',
-    logoText: '#111827',
+    userName:       '#111827',
+    divider:        'rgba(0,0,0,0.07)',
   };
 
   return (
@@ -73,6 +75,7 @@ export default function Sidebar({ isOpen, onClose }) {
           style={{
             position: 'fixed', inset: 0,
             backgroundColor: 'rgba(0,0,0,0.45)',
+            backdropFilter: 'blur(2px)',
             zIndex: 98,
           }}
         />
