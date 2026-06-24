@@ -74,3 +74,18 @@ input, textarea, select { font-family: inherit; }
   min-height: calc(100vh - var(--navbar-height));
   transition: margin-left var(--transition);
 }
+
+@media (max-width: 768px) {
+  .page-content { margin-left: 0; padding: 16px; }
+  :root { --sidebar-width: 0px; }
+}
+
+@media print {
+  nav, aside, .no-print {
+    display: none !important;
+  }
+  main, .page-content {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
